@@ -1,4 +1,4 @@
-package poly.darkdepths.citizeneye;
+package poly.darkdepths.strongbox;
 
 import android.content.Context;
 import android.hardware.Camera;

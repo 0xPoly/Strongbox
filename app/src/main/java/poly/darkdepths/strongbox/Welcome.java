@@ -1,4 +1,4 @@
-package poly.darkdepths.citizeneye;
+package poly.darkdepths.strongbox;
 
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;

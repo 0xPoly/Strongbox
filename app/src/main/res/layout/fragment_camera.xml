@@ -4,7 +4,7 @@
     android:paddingRight="0dp"
     android:paddingTop="0dp"
     android:paddingBottom="0dp"
-    tools:context="poly.darkdepths.citizeneye.CameraActivity.CameraFragment"
+    tools:context="poly.darkdepths.strongbox.CameraActivity.CameraFragment"
     android:padding="0dp">
 
     <FrameLayout

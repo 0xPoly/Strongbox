@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="poly.darkdepths.citizeneye" >
+    package="poly.darkdepths.strongbox" >
 
     <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
@@ -13,7 +13,7 @@
         android:label="@string/app_name"
         android:theme="@style/AppTheme" >
         <activity
-            android:name=".MainActivity"
+            android:name="poly.darkdepths.strongbox.MainActivity"
             android:label="@string/app_name" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -22,11 +22,11 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".Welcome"
+            android:name="poly.darkdepths.strongbox.Welcome"
             android:label="@string/app_name" >
         </activity>
         <activity
-            android:name=".CameraActivity"
+            android:name="poly.darkdepths.strongbox.CameraActivity"
             android:label="@string/title_activity_camera" >
         </activity>
     </application>
