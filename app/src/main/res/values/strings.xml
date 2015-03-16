@@ -1,0 +1,13 @@
+<resources>
+    <string name="app_name">Strongbox</string>
+
+    <string name="hello_world">Hello world!</string>
+    <string name="action_settings">Settings</string>
+    <string name="welcome_instructions">Please select a passphrase to locally encrypt videos. Do not forget your password! Without it, all data will be unrecoverably lost.</string>
+    <string name="title_activity_camera">CameraActivity</string>
+
+
+    <string name="title_section1">Section 1</string>
+    <string name="title_section2">Section 2</string>
+    <string name="title_section3">Section 3</string>
+</resources>
