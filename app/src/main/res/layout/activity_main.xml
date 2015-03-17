@@ -10,18 +10,20 @@
         android:layout_height="wrap_content"
         android:text="Welcome"
         android:id="@+id/button"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="121dp"
         android:onClick="openWelcome"
-        android:nestedScrollingEnabled="false" />
+        android:nestedScrollingEnabled="false"
+        android:layout_centerVertical="true"
+        android:layout_alignLeft="@+id/button2"
+        android:layout_alignStart="@+id/button2" />
 
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Camera"
         android:id="@+id/button2"
-        android:layout_centerVertical="true"
+        android:onClick="openCamera"
+        android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
-        android:onClick="openCamera" />
+        android:layout_marginTop="154dp" />
 
 </RelativeLayout>
