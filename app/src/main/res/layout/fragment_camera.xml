@@ -15,4 +15,32 @@
         android:layout_alignParentRight="true"
         android:layout_alignParentEnd="true" />
 
+    <RelativeLayout
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:layout_alignBottom="@+id/camera_preview"
+        android:layout_centerHorizontal="true">
+
+        <ImageButton
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:id="@+id/recordButton"
+            android:layout_alignParentBottom="true"
+            android:layout_centerHorizontal="true"
+            android:background="@drawable/abc_btn_radio_to_on_mtrl_015"
+            android:backgroundTint="@android:color/holo_red_dark" />
+
+        <ImageButton
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:id="@+id/galleryButton"
+            android:background="@android:drawable/stat_notify_sdcard"
+            android:layout_marginRight="40dp"
+            android:layout_marginEnd="37dp"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentEnd="true"
+            android:layout_marginBottom="25dp" />
+    </RelativeLayout>
+
 </RelativeLayout>
