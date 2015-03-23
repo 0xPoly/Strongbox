@@ -94,12 +94,6 @@ public class Welcome extends ActionBarActivity {
             try {
                 MainActivity state = (MainActivity) getApplicationContext();
                 state.securestore.generateKey(password.toCharArray(), Security.getSalt(this.getBaseContext()));
-
-                byte[] input = "Hello World".getBytes();
-                byte[] cipher = Security.encrypt(state.securestore.getKey(),input);
-
-                String plaintext = new String(Security.decrypt(state.securestore.getKey(), cipher), "UTF-8");
-                Log.v("Strongbox decrypt", plaintext);
             } catch (Exception e) {
                 e.printStackTrace();
             }
