@@ -212,6 +212,8 @@ public class CameraActivity extends ActionBarActivity {
             camera.setDisplayOrientation(result);
         }
 
+
+
         /**
          * clean up after preview is finished
          */
