@@ -17,7 +17,9 @@ import android.view.MenuItem;
 import android.view.Surface;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 import android.widget.FrameLayout;
+import android.widget.ListView;
 
 public class CameraActivity extends ActionBarActivity {
 
@@ -42,7 +44,7 @@ public class CameraActivity extends ActionBarActivity {
         setContentView(R.layout.activity_camera);
 
 
-        // Create the adapter that will return a fragment for each of the three
+        // Create the adapter that will return a fragment for each of the two
         // primary sections of the activity.
         mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
 
@@ -100,7 +102,7 @@ public class CameraActivity extends ActionBarActivity {
 
         @Override
         public int getCount() {
-            // Show 3 total pages.
+            // Show 2 total pages.
             return 2;
         }
 

@@ -84,7 +84,7 @@ public class Security {
         InputStream inputStream;
         DataInputStream dataInputStream;
         String saltFile = "salt.cfg";
-        byte[] salt = {0};
+        byte[] salt;
 
         try {
             inputStream = ctx.openFileInput(saltFile);
@@ -94,6 +94,7 @@ public class Security {
             dataInputStream.readFully(salt);
         } catch (Exception e) {
             e.printStackTrace();
+            return null;
         }
 
         return salt;

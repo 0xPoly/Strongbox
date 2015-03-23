@@ -1,5 +1,6 @@
 package poly.darkdepths.strongbox;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.text.Editable;
@@ -15,6 +16,7 @@ import android.widget.TextView;
  * Created by poly on 3/8/15.
  */
 public class Welcome extends ActionBarActivity {
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -90,17 +92,20 @@ public class Welcome extends ActionBarActivity {
             createButton.setEnabled(false);
         } else {
             try {
-                Security passStore = new Security();
-                passStore.generateKey(password.toCharArray(), Security.getSalt(this.getBaseContext()));
+                MainActivity state = (MainActivity) getApplicationContext();
+                state.securestore.generateKey(password.toCharArray(), Security.getSalt(this.getBaseContext()));
 
                 byte[] input = "Hello World".getBytes();
-                byte[] cipher = Security.encrypt(passStore.getKey(),input);
+                byte[] cipher = Security.encrypt(state.securestore.getKey(),input);
 
-                String plaintext = new String(Security.decrypt(passStore.getKey(), cipher), "UTF-8");
+                String plaintext = new String(Security.decrypt(state.securestore.getKey(), cipher), "UTF-8");
                 Log.v("Strongbox decrypt", plaintext);
             } catch (Exception e) {
                 e.printStackTrace();
             }
         }
+
+        Intent intent = new Intent(Welcome.this, MainActivity.class);
+        startActivity(intent);
     }
 }
