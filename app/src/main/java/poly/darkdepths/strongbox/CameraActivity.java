@@ -1,9 +1,15 @@
 package poly.darkdepths.strongbox;
 
+import java.io.IOException;
 import java.util.Locale;
 
 import android.app.Activity;
+import android.content.Context;
+import android.graphics.Color;
+import android.graphics.PorterDuff;
 import android.hardware.Camera;
+import android.media.CamcorderProfile;
+import android.media.MediaRecorder;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -18,8 +24,11 @@ import android.view.Surface;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.FrameLayout;
+import android.widget.ImageButton;
 import android.widget.ListView;
+import android.widget.Toast;
 
 public class CameraActivity extends ActionBarActivity {
 
@@ -128,8 +137,10 @@ public class CameraActivity extends ActionBarActivity {
          * fragment.
          */
         private static final String ARG_SECTION_NUMBER = "section_number";
-        private Camera mCamera;
+        private Camera mCamera = null;
         private CameraPreview mPreview;
+        private MediaRecorder recorder = null;
+        private boolean isRecording = false;
 
         /**
          * Returns a new instance of this fragment for the given section
@@ -146,12 +157,30 @@ public class CameraActivity extends ActionBarActivity {
         public CameraFragment() {
         }
 
+        public Camera getmCamera(){
+            return this.mCamera;
+        }
+
         @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container,
                                  Bundle savedInstanceState) {
             View rootView = inflater.inflate(R.layout.fragment_camera, container, false);
             safeCameraOpenInView(rootView);
+            setUpVideoButton(rootView);
             return rootView;
+        }
+
+        @Override
+        public void onPause(){
+            super.onPause();
+            releaseMediaRecorder();
+            releaseCameraAndPreview();
+        }
+
+        @Override
+        public void onResume(){
+            super.onResume();
+            safeCameraOpenInView(getView());
         }
 
         /**
@@ -212,7 +241,83 @@ public class CameraActivity extends ActionBarActivity {
             camera.setDisplayOrientation(result);
         }
 
+        protected boolean prepareForVideoRecording() {
+            mCamera.unlock();
+            recorder = new MediaRecorder();
 
+            recorder.setCamera(mCamera);
+
+            recorder.setVideoSource(MediaRecorder.VideoSource.CAMERA);
+            recorder.setAudioSource(MediaRecorder.AudioSource.MIC);
+            recorder.setOutputFormat(/*MediaRecorder.OutputFormat.OUTPUT_FORMAT_MPEG2TS*/8);
+            //recorder.setOutputFormat(MediaRecorder.OutputFormat.DEFAULT);
+            recorder.setAudioEncoder(MediaRecorder.AudioEncoder.AAC);
+            recorder.setVideoEncoder(MediaRecorder.VideoEncoder.H264);
+            recorder.setAudioSamplingRate(48000);
+            recorder.setAudioEncodingBitRate(128000);
+
+            Camera.Parameters params = mCamera.getParameters();
+            Camera.Size optimalSize = mPreview.getOptimalPreviewSize(params.getSupportedPreviewSizes(),  getResources().getDisplayMetrics().widthPixels, getResources().getDisplayMetrics().heightPixels);
+            recorder.setVideoSize(optimalSize.width,optimalSize.height);
+
+            recorder.setOutputFile(FileManagement.getStreamFd());
+
+            recorder.setPreviewDisplay(mPreview.getHolder().getSurface());
+
+            try {
+                recorder.prepare();
+            } catch (IllegalStateException e) {
+                Log.e("Strongbox", "IllegalStateException when preparing MediaRecorder "
+                        + e.getMessage());
+                e.getStackTrace();
+                releaseMediaRecorder();
+                return false;
+            } catch (IOException e) {
+                Log.e("Strongbox", "IOException when preparing MediaRecorder "
+                        + e.getMessage());
+                e.getStackTrace();
+                releaseMediaRecorder();
+                return false;
+            }
+            return true;
+        }
+
+        private void releaseMediaRecorder() {
+            if (recorder != null) {
+                recorder.reset();
+                recorder.release();
+                recorder = null;
+                mCamera.lock();
+            }
+        }
+
+        private void setUpVideoButton(View view) {
+            final ImageButton recordVideoButton = (ImageButton)view.findViewById(R.id.recordButton);
+
+            recordVideoButton.setOnClickListener(
+                    new View.OnClickListener() {
+                        public void onClick(View v) {
+                            if (isRecording) {
+                                recorder.stop();
+                                releaseMediaRecorder();
+                                mCamera.lock();
+
+                                isRecording = false;
+                            } else {
+                                if (prepareForVideoRecording()) {
+                                    recordVideoButton.setColorFilter(Color.RED);
+                                    recorder.start();
+
+                                    isRecording = true;
+                                } else {
+                                    // Something has gone wrong! Release the camera
+                                    releaseMediaRecorder();
+                                }
+                            }
+                        }
+                    }
+            );
+        }
 
         /**
          * clean up after preview is finished

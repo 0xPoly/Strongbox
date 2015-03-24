@@ -28,7 +28,7 @@
             android:layout_alignParentBottom="true"
             android:layout_centerHorizontal="true"
             android:background="@drawable/abc_btn_radio_to_on_mtrl_015"
-            android:backgroundTint="@android:color/holo_red_dark" />
+            android:backgroundTint="@android:color/holo_blue_dark" />
 
         <ImageButton
             android:layout_width="50dp"

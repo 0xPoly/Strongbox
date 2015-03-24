@@ -42,7 +42,7 @@ public class FileManagement {
         }
     }
 
-    private FileDescriptor getStreamFd() {
+    public static FileDescriptor getStreamFd() {
         File dir = new File(Environment.getExternalStorageDirectory().getPath()+"/Strongbox/");
         dir.mkdirs();
 
@@ -55,7 +55,7 @@ public class FileManagement {
                     new FileOutputStream(temp)).start();
         }
         catch (IOException e) {
-            Log.e(getClass().getSimpleName(), "Exception opening pipe", e);
+            Log.e("Strongbox", "Exception opening pipe", e);
         }
         return(pipe[1].getFileDescriptor());
     }
