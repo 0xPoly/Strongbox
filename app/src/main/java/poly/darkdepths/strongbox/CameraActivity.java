@@ -28,6 +28,7 @@ import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ListView;
+import android.widget.TabHost;
 import android.widget.Toast;
 
 public class CameraActivity extends ActionBarActivity {
@@ -165,8 +166,8 @@ public class CameraActivity extends ActionBarActivity {
         public View onCreateView(LayoutInflater inflater, ViewGroup container,
                                  Bundle savedInstanceState) {
             View rootView = inflater.inflate(R.layout.fragment_camera, container, false);
-            //safeCameraOpenInView(rootView);
-            //setUpVideoButton(rootView);
+            setUpVideoButton(rootView);
+            setUpGalleryButton(rootView);
             return rootView;
         }
 
@@ -319,6 +320,22 @@ public class CameraActivity extends ActionBarActivity {
                     }
             );
         }
+
+
+        private void setUpGalleryButton(final View view) {
+            final ImageButton galleryButton = (ImageButton)view.findViewById(R.id.galleryButton);
+            galleryButton.setOnClickListener(
+                    new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            ViewPager viewPager = (ViewPager) getActivity().findViewById(R.id.pager);
+                            viewPager.setCurrentItem(1);
+
+                        }
+                    }
+            );
+        }
+
 
         /**
          * clean up after preview is finished
