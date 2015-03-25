@@ -12,8 +12,9 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 /**
- * Created by poly on 3/8/15.
+ * This activity handles setting up the app for the very first time and setting up a user password.
  */
+
 public class Welcome extends ActionBarActivity {
 
     @Override
