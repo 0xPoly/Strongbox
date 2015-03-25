@@ -14,6 +14,10 @@ import java.io.InputStream;
  * This activity handles all file management, including the pipes used for mediarecorder.
  */
 public class FileManagement {
+    /**
+     * Used by MediaRecorder to start worker with pipe to stream data through.
+     * Standard buffered pipe routine.
+     */
     static class TransferThread extends Thread {
         InputStream in;
         FileOutputStream out;
@@ -42,7 +46,14 @@ public class FileManagement {
         }
     }
 
+    /**
+     * Returns FileDescriptor for use with MediaRecorder.
+     * Important: can only be used with non-seeking file formats (MPEG-TS mainly)
+     *
+     * @return
+     */
     public static FileDescriptor getStreamFd() {
+        // TODO proper file handling
         File dir = new File(Environment.getExternalStorageDirectory().getPath()+"/Strongbox/");
         dir.mkdirs();
 
