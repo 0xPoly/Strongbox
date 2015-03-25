@@ -13,7 +13,7 @@ import java.io.InputStream;
 /**
  * This activity handles all file management, including the pipes used for mediarecorder.
  */
-public class FileManagement {
+public class StreamHandler {
     /**
      * Used by MediaRecorder to start worker with pipe to stream data through.
      * Standard buffered pipe routine.

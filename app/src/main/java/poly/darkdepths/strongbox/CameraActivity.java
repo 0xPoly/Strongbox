@@ -1,11 +1,11 @@
 package poly.darkdepths.strongbox;
 
-import java.io.IOException;
 import java.util.Locale;
 
 import android.app.Activity;
 import android.graphics.Color;
 import android.hardware.Camera;
+import android.media.CamcorderProfile;
 import android.media.MediaRecorder;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v4.app.Fragment;
@@ -237,42 +237,38 @@ public class CameraActivity extends ActionBarActivity {
 
         protected boolean prepareForVideoRecording() {
             mCamera.unlock();
-            recorder = new MediaRecorder();
+
+            recorder =  new MediaRecorder();
+            mCamera.stopPreview();
+            mCamera.lock();
+            mCamera.unlock();
 
             recorder.setCamera(mCamera);
-
+            recorder.setAudioSource(MediaRecorder.AudioSource.CAMCORDER);
             recorder.setVideoSource(MediaRecorder.VideoSource.CAMERA);
-            recorder.setAudioSource(MediaRecorder.AudioSource.MIC);
-            recorder.setOutputFormat(/*MediaRecorder.OutputFormat.OUTPUT_FORMAT_MPEG2TS*/8);
-            //recorder.setOutputFormat(MediaRecorder.OutputFormat.DEFAULT);
-            recorder.setAudioEncoder(MediaRecorder.AudioEncoder.AAC);
-            recorder.setVideoEncoder(MediaRecorder.VideoEncoder.H264);
-            recorder.setAudioSamplingRate(48000);
-            recorder.setAudioEncodingBitRate(128000);
 
-            Camera.Parameters params = mCamera.getParameters();
-            Camera.Size optimalSize = mPreview.getOptimalPreviewSize(params.getSupportedPreviewSizes(),  getResources().getDisplayMetrics().widthPixels, getResources().getDisplayMetrics().heightPixels);
-            recorder.setVideoSize(optimalSize.width,optimalSize.height);
+            CamcorderProfile targetProfile = CamcorderProfile.get(CamcorderProfile.QUALITY_LOW);
+            targetProfile.videoFrameWidth = 320;
+            targetProfile.videoFrameHeight = 240;
+            targetProfile.videoFrameRate = 30;
+            targetProfile.videoBitRate = 512*1024;
+            targetProfile.videoCodec = MediaRecorder.VideoEncoder.H264;
+            targetProfile.audioCodec = MediaRecorder.AudioEncoder.AMR_NB;
+            targetProfile.fileFormat = MediaRecorder.OutputFormat.MPEG_4;
+            recorder.setProfile(targetProfile);
 
-            recorder.setOutputFile(FileManagement.getStreamFd());
+            recorder.setOutputFile(StreamHandler.getStreamFd());
+            recorder.setMaxDuration(9600000); // set max recording 4 hours
 
-            recorder.setPreviewDisplay(mPreview.getHolder().getSurface());
 
             try {
                 recorder.prepare();
-            } catch (IllegalStateException e) {
-                Log.e("Strongbox", "IllegalStateException when preparing MediaRecorder "
-                        + e.getMessage());
-                e.getStackTrace();
+            } catch (Exception e) {
                 releaseMediaRecorder();
-                return false;
-            } catch (IOException e) {
-                Log.e("Strongbox", "IOException when preparing MediaRecorder "
-                        + e.getMessage());
-                e.getStackTrace();
-                releaseMediaRecorder();
+                e.printStackTrace();
                 return false;
             }
+
             return true;
         }
 
@@ -281,6 +277,11 @@ public class CameraActivity extends ActionBarActivity {
                 recorder.reset();
                 recorder.release();
                 recorder = null;
+                try {
+                    mCamera.reconnect();
+                } catch (Exception e){
+                    e.printStackTrace();
+                }
                 mCamera.lock();
             }
         }
@@ -294,12 +295,12 @@ public class CameraActivity extends ActionBarActivity {
                             if (isRecording) {
                                 recorder.stop();
                                 releaseMediaRecorder();
-                                mCamera.lock();
 
                                 isRecording = false;
                             } else {
                                 if (prepareForVideoRecording()) {
                                     recordVideoButton.setColorFilter(Color.RED);
+
                                     recorder.start();
 
                                     isRecording = true;
@@ -320,6 +321,7 @@ public class CameraActivity extends ActionBarActivity {
                     new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
+                            // switch to gallery tab on click
                             ViewPager viewPager = (ViewPager) getActivity().findViewById(R.id.pager);
                             viewPager.setCurrentItem(1);
 
