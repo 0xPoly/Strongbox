@@ -9,6 +9,7 @@ import java.io.FileDescriptor;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Arrays;
 
 /**
  * This activity handles all file management, including the pipes used for mediarecorder.
@@ -29,9 +30,20 @@ public class StreamHandler {
 
         @Override
         public void run() {
-            byte[] buf = new byte[8192];
+            byte[] mdat = {'m','d','a','t'};
+            byte[] buf = new byte[4];
+
+            while (!Arrays.equals(mdat, buf)) {
+                try {
+                    in.read(buf);
+                } catch (Exception e){
+                    e.printStackTrace();
+                }
+            }
+
             int len;
             try {
+                out.write(mdat,0,mdat.length);
                 while ((len = in.read(buf)) >= 0) {
                     out.write(buf, 0, len);
                 }

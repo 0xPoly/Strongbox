@@ -252,7 +252,7 @@ public class CameraActivity extends ActionBarActivity {
             targetProfile.videoFrameHeight = 240;
             targetProfile.videoFrameRate = 30;
             targetProfile.videoBitRate = 512*1024;
-            targetProfile.videoCodec = MediaRecorder.VideoEncoder.H264;
+            targetProfile.videoCodec = MediaRecorder.VideoEncoder.H263;
             targetProfile.audioCodec = MediaRecorder.AudioEncoder.AMR_NB;
             targetProfile.fileFormat = MediaRecorder.OutputFormat.MPEG_4;
             recorder.setProfile(targetProfile);
