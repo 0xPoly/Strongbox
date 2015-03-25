@@ -96,9 +96,8 @@ public class Welcome extends ActionBarActivity {
             } catch (Exception e) {
                 e.printStackTrace();
             }
+            Intent intent = new Intent(Welcome.this, MainActivity.class);
+            startActivity(intent);
         }
-
-        Intent intent = new Intent(Welcome.this, MainActivity.class);
-        startActivity(intent);
     }
 }
