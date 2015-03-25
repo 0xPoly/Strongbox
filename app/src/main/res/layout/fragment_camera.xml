@@ -27,8 +27,7 @@
             android:id="@+id/recordButton"
             android:layout_alignParentBottom="true"
             android:layout_centerHorizontal="true"
-            android:background="@drawable/abc_btn_radio_to_on_mtrl_015"
-            android:backgroundTint="@android:color/holo_blue_dark" />
+            android:background="@drawable/ic_video_call" />
 
         <ImageButton
             android:layout_width="50dp"

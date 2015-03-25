@@ -293,18 +293,19 @@ public class CameraActivity extends ActionBarActivity {
                     new View.OnClickListener() {
                         public void onClick(View v) {
                             if (isRecording) {
+                                recordVideoButton.setBackgroundResource(R.drawable.ic_video_call);
                                 recorder.stop();
                                 releaseMediaRecorder();
 
                                 isRecording = false;
                             } else {
                                 if (prepareForVideoRecording()) {
-                                    recordVideoButton.setColorFilter(Color.RED);
-
+                                    recordVideoButton.setBackgroundResource(R.drawable.ic_stop);
                                     recorder.start();
 
                                     isRecording = true;
                                 } else {
+                                    recordVideoButton.setBackgroundResource(R.drawable.ic_video_call);
                                     // Something has gone wrong! Release the camera
                                     releaseMediaRecorder();
                                 }
