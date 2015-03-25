@@ -11,7 +11,7 @@ import java.io.IOException;
 import java.io.InputStream;
 
 /**
- * Created by poly on 3/23/15.
+ * This activity handles all file management, including the pipes used for mediarecorder.
  */
 public class FileManagement {
     static class TransferThread extends Thread {

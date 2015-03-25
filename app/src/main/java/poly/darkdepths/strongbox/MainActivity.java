@@ -7,7 +7,7 @@ import android.view.Menu;
 import android.view.View;
 
 /**
- * Created by poly on 3/8/15.
+ * Entry point for app
  */
 public class MainActivity extends Activity {
     public Security securestore;

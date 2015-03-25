@@ -9,7 +9,7 @@ import java.io.IOException;
 import java.util.List;
 
 /**
- * Created by poly on 3/13/15.
+ * Only camera and recorder preview surfaces in handled in this activity.
  */
 public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback {
 
