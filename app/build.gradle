@@ -22,4 +22,8 @@ android {
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
     compile 'com.android.support:appcompat-v7:21.0.3'
+    compile files('/home/poly/dev/Strongbox/libs/sqlcipher.jar')
+    compile files('/home/poly/dev/Strongbox/libs/sqlcipher-javadoc.jar')
+    compile files('/home/poly/dev/Strongbox/libs/commons-codec.jar')
+    compile files('/home/poly/dev/Strongbox/libs/guava-r09.jar')
 }

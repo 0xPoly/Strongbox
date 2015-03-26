@@ -11,7 +11,9 @@
         android:layout_height="wrap_content"
         android:id="@+id/imageView"
         android:layout_gravity="center_horizontal"
-        android:background="@mipmap/ic_launcher" />
+        android:background="@mipmap/ic_launcher"
+        android:minHeight="150dp"
+        android:minWidth="150dp" />
 
     <TextView
         android:layout_width="wrap_content"
@@ -31,7 +33,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textAppearance="?android:attr/textAppearanceMedium"
-            android:id="@+id/match_warn"
+            android:id="@+id/pass_warn"
             android:paddingTop="10dp"
             android:textStyle="bold"
             android:textColor="@android:color/holo_red_light" />
@@ -52,8 +54,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Unlock"
-        android:id="@+id/create_button"
-        android:onClick="initialize"
+        android:id="@+id/unlock_button"
+        android:onClick="checkPass"
         android:layout_gravity="right"
         android:layout_marginTop="20dp" />
 

@@ -1,9 +1,13 @@
 package poly.darkdepths.strongbox;
 
+import java.io.BufferedOutputStream;
+import java.io.OutputStream;
 import java.util.Locale;
 
 import android.app.Activity;
 import android.graphics.Color;
+import android.graphics.Rect;
+import android.graphics.YuvImage;
 import android.hardware.Camera;
 import android.media.CamcorderProfile;
 import android.media.MediaRecorder;
@@ -132,8 +136,15 @@ public class CameraActivity extends ActionBarActivity {
         private static final String ARG_SECTION_NUMBER = "section_number";
         private Camera mCamera = null;
         private CameraPreview mPreview;
-        private MediaRecorder recorder = null;
         private boolean isRecording = false;
+
+        private Camera.Parameters params = null;
+        private int mPreviewFormat = Integer.MIN_VALUE;
+        private int mPreviewWidth = Integer.MIN_VALUE;
+        private int mPreviewHeight = Integer.MIN_VALUE;
+        private Rect mPreviewRect = null;
+        Camera.PreviewCallback callback = null;
+        BufferedOutputStream out = null;
 
         /**
          * Returns a new instance of this fragment for the given section
@@ -166,7 +177,7 @@ public class CameraActivity extends ActionBarActivity {
         @Override
         public void onPause(){
             super.onPause();
-            releaseMediaRecorder();
+            stopRecording();
             releaseCameraAndPreview();
         }
 
@@ -205,6 +216,7 @@ public class CameraActivity extends ActionBarActivity {
             preview.addView(mPreview);
             // TODO change 0 to proper camera ID detection
             setCameraDisplayOrientation(this.getActivity(), 0, mCamera);
+            params = mCamera.getParameters();
             return qOpened;
         }
 
@@ -235,54 +247,39 @@ public class CameraActivity extends ActionBarActivity {
             camera.setDisplayOrientation(result);
         }
 
-        protected boolean prepareForVideoRecording() {
-            mCamera.unlock();
+        protected boolean prepareForVideoRecording(){
+            // setup callback preferences
+            mPreviewFormat = params.getPreviewFormat();
+            final Camera.Size previewSize = params.getPreviewSize();
+            mPreviewWidth = previewSize.width;
+            mPreviewHeight = previewSize.height;
+            mPreviewRect = new Rect(0, 0, mPreviewWidth, mPreviewHeight);
 
-            recorder =  new MediaRecorder();
-            mCamera.stopPreview();
-            mCamera.lock();
-            mCamera.unlock();
+            callback = new Camera.PreviewCallback()
+            {
+                public void onPreviewFrame(byte[] data, Camera camera)
+                {
+                    // Create JPEG
+                    YuvImage image = new YuvImage(data, mPreviewFormat, mPreviewWidth, mPreviewHeight,
+                            null /* strides */);
+                    // TODO quality adjustment
+                    image.compressToJpeg(mPreviewRect, 50, out);
 
-            recorder.setCamera(mCamera);
-            recorder.setAudioSource(MediaRecorder.AudioSource.CAMCORDER);
-            recorder.setVideoSource(MediaRecorder.VideoSource.CAMERA);
-
-            CamcorderProfile targetProfile = CamcorderProfile.get(CamcorderProfile.QUALITY_LOW);
-            targetProfile.videoFrameWidth = 320;
-            targetProfile.videoFrameHeight = 240;
-            targetProfile.videoFrameRate = 30;
-            targetProfile.videoBitRate = 512*1024;
-            targetProfile.videoCodec = MediaRecorder.VideoEncoder.H263;
-            targetProfile.audioCodec = MediaRecorder.AudioEncoder.AMR_NB;
-            targetProfile.fileFormat = MediaRecorder.OutputFormat.MPEG_4;
-            recorder.setProfile(targetProfile);
-
-            recorder.setOutputFile(StreamHandler.getStreamFd());
-            recorder.setMaxDuration(9600000); // set max recording 4 hours
-
-
-            try {
-                recorder.prepare();
-            } catch (Exception e) {
-                releaseMediaRecorder();
-                e.printStackTrace();
-                return false;
-            }
-
+                    // Send it over the network ...
+                }
+            };
             return true;
         }
 
-        private void releaseMediaRecorder() {
-            if (recorder != null) {
-                recorder.reset();
-                recorder.release();
-                recorder = null;
-                try {
-                    mCamera.reconnect();
-                } catch (Exception e){
-                    e.printStackTrace();
-                }
-                mCamera.lock();
+        private void startRecording(){
+            out = StreamHandler.getStreamOs();
+            mCamera.setPreviewCallback(callback);
+        }
+
+        private void stopRecording() {
+            mCamera.setPreviewCallback(null);
+            if (out != null) {
+                StreamHandler.closeStreamOs(out);
             }
         }
 
@@ -294,20 +291,19 @@ public class CameraActivity extends ActionBarActivity {
                         public void onClick(View v) {
                             if (isRecording) {
                                 recordVideoButton.setBackgroundResource(R.drawable.ic_video_call);
-                                recorder.stop();
-                                releaseMediaRecorder();
+                                stopRecording();
 
                                 isRecording = false;
                             } else {
                                 if (prepareForVideoRecording()) {
                                     recordVideoButton.setBackgroundResource(R.drawable.ic_stop);
-                                    recorder.start();
+                                    startRecording();
 
                                     isRecording = true;
                                 } else {
-                                    recordVideoButton.setBackgroundResource(R.drawable.ic_video_call);
+                                    //recordVideoButton.setBackgroundResource(R.drawable.ic_video_call);
                                     // Something has gone wrong! Release the camera
-                                    releaseMediaRecorder();
+
                                 }
                             }
                         }

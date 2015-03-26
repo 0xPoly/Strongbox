@@ -4,11 +4,13 @@ import android.os.Environment;
 import android.os.ParcelFileDescriptor;
 import android.util.Log;
 
+import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileDescriptor;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.Arrays;
 
 /**
@@ -81,5 +83,28 @@ public class StreamHandler {
             Log.e("Strongbox", "Exception opening pipe", e);
         }
         return(pipe[1].getFileDescriptor());
+    }
+
+    public static BufferedOutputStream getStreamOs(){
+        File dir = new File(Environment.getExternalStorageDirectory().getPath()+"/Strongbox/");
+        dir.mkdirs();
+        File temp = new File(Environment.getExternalStorageDirectory().getPath()+"/Strongbox/video.mjpg");
+
+        BufferedOutputStream out = null;
+        try {
+            out = new BufferedOutputStream(new FileOutputStream(temp));
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
+        return out;
+    }
+
+    public static void closeStreamOs(BufferedOutputStream out) {
+        try {
+            out.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }

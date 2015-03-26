@@ -61,7 +61,8 @@ public class Security {
      * Function generates cryptographically random salt and stores it on internal storage,
      * accessible only to this application. Context must be passed for openFileOutput accessibility
      */
-    public static void writeSalt(Context ctx) {
+    public static void storeSalt(Context ctx) {
+
         FileOutputStream outputStream;
         final String filename = "salt.cfg";
         byte[] salt = generateSalt();
