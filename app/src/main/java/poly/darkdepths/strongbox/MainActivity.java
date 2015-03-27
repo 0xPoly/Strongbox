@@ -1,12 +1,8 @@
 package poly.darkdepths.strongbox;
 
 import android.app.Activity;
-import android.app.Application;
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Parcelable;
-import android.provider.ContactsContract;
-import android.util.Log;
 import android.view.Menu;
 import android.view.View;
 
@@ -17,7 +13,6 @@ import java.io.File;
  */
 
 public class MainActivity extends Activity{
-    DataStore dataStore = new DataStore();
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
