@@ -26,7 +26,7 @@ public class Welcome extends ActionBarActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.welcome);
 
-
+        Security.storeSalt(getBaseContext());
 
         EditText passwordField = (EditText) findViewById(R.id.password_prompt);
         EditText repeatField = (EditText) findViewById(R.id.repeat_prompt);
@@ -96,20 +96,20 @@ public class Welcome extends ActionBarActivity {
             createButton.setEnabled(false);
         } else {
             try {
-                Security.storeSalt(getBaseContext());
-
                 Globals   appState    = (Globals) getApplicationContext();
                 Security  securestore = appState.getSecurestore();
                 securestore.generateKey(password.toCharArray(), Security.getSalt(this.getBaseContext()));
 
                 SQLiteDatabase.loadLibs(this);
-                File databaseFile = getDatabasePath("store.db");
+                File databaseFile = getDatabasePath(appState.getDatabaseName());
                 databaseFile.mkdirs();
                 databaseFile.delete();
 
-                SQLiteDatabase database = SQLiteDatabase.openOrCreateDatabase(databaseFile, new String(securestore.getKey().getEncoded()), null);
-                database.execSQL("CREATE TABLE videos(Id integer primary key autoincrement, Name text not null, Iv text not null);");
+                SQLiteDatabase database = SQLiteDatabase.openOrCreateDatabase(databaseFile,
+                        new String(securestore.getKey().getEncoded()), null);
+                database.execSQL(appState.getDatabaseInitializer());
                 database.close();
+
 
                 Intent intent = new Intent(Welcome.this, MainActivity.class);
                 startActivity(intent);

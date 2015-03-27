@@ -53,14 +53,23 @@ public class Unlock extends Activity {
         EditText passwordField = (EditText) findViewById(R.id.password_prompt);
         String password = passwordField.getText().toString();
         try {
+            // get Globals
             Globals appState = (Globals) getApplicationContext();
             Security securestore = appState.getSecurestore();
-            securestore.generateKey(password.toCharArray(), Security.getSalt(this.getBaseContext()));
+            securestore.generateKey(password.toCharArray(),
+                    Security.getSalt(this.getBaseContext()));
 
+            // load encrypted SQLlite database
             SQLiteDatabase.loadLibs(this);
-            File databaseFile = getDatabasePath("store.db");
+            File databaseFile = getDatabasePath(appState.getDatabaseName());
 
-            SQLiteDatabase database = SQLiteDatabase.openOrCreateDatabase(databaseFile, new String(securestore.getKey().getEncoded()), null);
+            // attempt to open database, this will fail if password is wrong
+            // or if database is otherwise corrupted
+            SQLiteDatabase database = SQLiteDatabase.openDatabase(
+                    databaseFile.getPath(),
+                    new String(securestore.getKey().getEncoded()), null, 0);
+
+            // error returned if database isn't closed correctly
             database.close();
 
             Intent intent = new Intent(Unlock.this, MainActivity.class);

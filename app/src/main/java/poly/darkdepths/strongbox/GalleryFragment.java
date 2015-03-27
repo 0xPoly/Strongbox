@@ -4,11 +4,22 @@ package poly.darkdepths.strongbox;
  * Created by poly on 3/27/15.
  */
 
+import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CursorAdapter;
+import android.widget.ListView;
+import android.widget.TextView;
+
+import net.sqlcipher.Cursor;
+import net.sqlcipher.database.SQLiteDatabase;
+import java.io.File;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 
 /**
  * The right fragment, containing the gallery previews and access to settings.
@@ -38,6 +49,81 @@ public class GalleryFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_gallery, container, false);
+        View view = inflater.inflate(R.layout.fragment_gallery, container, false);
+
+        // get Globals
+        Globals appState = (Globals) getActivity().getApplicationContext();
+        Security securestore = appState.getSecurestore();
+
+        // load encrypted SQLlite database
+        SQLiteDatabase.loadLibs(getActivity());
+        File databaseFile = getActivity().getDatabasePath(appState.getDatabaseName());
+
+        // attempt to open database, this will fail if password is wrong
+        // or if database is otherwise corrupted
+        SQLiteDatabase database = SQLiteDatabase.openDatabase(
+                databaseFile.getPath(),
+                new String(securestore.getKey().getEncoded()), null, SQLiteDatabase.OPEN_READWRITE);
+
+        /*
+        Video video = new Video("Robber Barons", 515L);
+        DataStore.storeVideo(appState, database, video);
+
+        Video videoTwo = new Video("Letters of Insurgents", 420L);
+        DataStore.storeVideo(appState, database, videoTwo);
+        */
+
+        Cursor cursor = database.rawQuery("SELECT  * FROM " + appState.getTableName(), null);
+
+        TodoCursorAdapter adapter = new TodoCursorAdapter(getActivity().getApplicationContext(), cursor);
+        ListView listView = (ListView) view.findViewById(R.id.listView);
+        listView.setAdapter(adapter);
+
+        database.close();
+        return view;
     }
+}
+
+class TodoCursorAdapter extends CursorAdapter {
+
+    public TodoCursorAdapter(Context context, Cursor cursor) {
+        super(context, cursor, 0);
+    }
+
+    @Override
+    public void bindView(View view, Context context, android.database.Cursor cursor) {
+        bindView(view, context, (Cursor)cursor);
+    }
+
+    public View newView(Context context, android.database.Cursor cursor, ViewGroup parent) {
+        return LayoutInflater.from(context).inflate(R.layout.list_item, parent, false);
+    }
+
+    // The newView method is used to inflate a new view and return it,
+    // you don't bind any data to the view at this point.
+    public View newView(Context context, Cursor cursor, ViewGroup parent) {
+        return LayoutInflater.from(context).inflate(R.layout.list_item, parent, false);
+    }
+
+    // The bindView method is used to bind all data to a given view
+    // such as setting the text on a TextView.
+    public void bindView(View view, Context context, Cursor cursor) {
+        // Find fields to populate in inflated template
+        TextView tvBody = (TextView) view.findViewById(R.id.tvBody);
+        TextView tvDate = (TextView) view.findViewById(R.id.tvDate);
+        TextView tvLength = (TextView) view.findViewById(R.id.tvLength);
+        // Extract properties from cursor
+        String body = cursor.getString(cursor.getColumnIndexOrThrow("title"));
+        long raw_date = cursor.getLong(cursor.getColumnIndexOrThrow("time"));
+        long length = cursor.getLong(cursor.getColumnIndex("length"));
+
+        DateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        String date = df.format(raw_date);
+        // Populate fields with extracted properties
+        tvBody.setText(body);
+        tvDate.setText(String.valueOf(date));
+        tvLength.setText(String.valueOf(length));
+    }
+
+
 }

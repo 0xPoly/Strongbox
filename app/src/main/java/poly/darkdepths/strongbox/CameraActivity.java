@@ -1,10 +1,13 @@
 package poly.darkdepths.strongbox;
 
 import java.io.BufferedOutputStream;
+import java.io.File;
 import java.io.OutputStream;
+import java.util.List;
 import java.util.Locale;
 
 import android.app.Activity;
+import android.content.ContentValues;
 import android.graphics.Color;
 import android.graphics.Rect;
 import android.graphics.YuvImage;
@@ -26,6 +29,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
+
+import net.sqlcipher.Cursor;
+import net.sqlcipher.database.SQLiteDatabase;
 
 public class CameraActivity extends ActionBarActivity {
 
@@ -82,6 +88,23 @@ public class CameraActivity extends ActionBarActivity {
             default:
                 return super.onOptionsItemSelected(item);
         }
+    }
+
+    public void testDatabase(View view) {
+        Globals appState = (Globals) getApplication();
+        Security securestore = appState.getSecurestore();
+
+        SQLiteDatabase.loadLibs(this.getApplicationContext());
+        File databaseFile = getDatabasePath(appState.getDatabaseName());
+
+        SQLiteDatabase database = SQLiteDatabase.openDatabase(databaseFile.getPath(), new String(securestore.getKey().getEncoded()), null, SQLiteDatabase.OPEN_READWRITE);
+
+        List<Video> videoList = DataStore.getAllVideos(appState, database);
+        Video temp = videoList.get(0);
+
+        Log.d("VideoList", temp.getTitle());
+
+        database.close();
     }
 
 

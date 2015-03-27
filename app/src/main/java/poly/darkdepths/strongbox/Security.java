@@ -129,4 +129,14 @@ public class Security {
         }
         return output;
     }
+
+    public static byte[] generateIV() {
+        final int IVLength = 32;
+
+        SecureRandom sr = new SecureRandom();
+        byte[] iv = new byte[IVLength];
+        sr.nextBytes(iv);
+
+        return iv;
+    }
 }
