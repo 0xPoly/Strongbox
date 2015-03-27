@@ -110,7 +110,7 @@ public class Welcome extends ActionBarActivity {
                 databaseFile.delete();
 
                 SQLiteDatabase database = SQLiteDatabase.openOrCreateDatabase(databaseFile, new String(securestore.getKey().getEncoded()), null);
-                database.execSQL("CREATE TABLE videos(Id INTEGER, Name STRING, Iv STRING)");
+                database.execSQL("CREATE TABLE videos(Id integer primary key autoincrement, Name text not null, Iv text not null);");
                 database.close();
 
                 Intent intent = new Intent(Welcome.this, MainActivity.class);
