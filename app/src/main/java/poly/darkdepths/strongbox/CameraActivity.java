@@ -1,19 +1,12 @@
 package poly.darkdepths.strongbox;
 
 import java.io.BufferedOutputStream;
-import java.io.File;
-import java.io.OutputStream;
-import java.util.List;
 import java.util.Locale;
 
 import android.app.Activity;
-import android.content.ContentValues;
-import android.graphics.Color;
 import android.graphics.Rect;
 import android.graphics.YuvImage;
 import android.hardware.Camera;
-import android.media.CamcorderProfile;
-import android.media.MediaRecorder;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -30,19 +23,8 @@ import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
 
-import net.sqlcipher.Cursor;
-import net.sqlcipher.database.SQLiteDatabase;
-
 public class CameraActivity extends ActionBarActivity {
 
-    /**
-     * The {@link android.support.v4.view.PagerAdapter} that will provide
-     * fragments for each of the sections. We use a
-     * {@link FragmentPagerAdapter} derivative, which will keep every
-     * loaded fragment in memory. If this becomes too memory intensive, it
-     * may be best to switch to a
-     * {@link android.support.v4.app.FragmentStatePagerAdapter}.
-     */
     SectionsPagerAdapter mSectionsPagerAdapter;
 
     /**
@@ -317,7 +299,6 @@ public class CameraActivity extends ActionBarActivity {
             );
         }
 
-
         private void setUpGalleryButton(final View view) {
             final ImageButton galleryButton = (ImageButton)view.findViewById(R.id.galleryButton);
             galleryButton.setOnClickListener(
@@ -332,7 +313,6 @@ public class CameraActivity extends ActionBarActivity {
                     }
             );
         }
-
 
         /**
          * clean up after preview is finished
