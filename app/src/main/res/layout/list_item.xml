@@ -5,9 +5,20 @@
     android:orientation="horizontal"
     android:weightSum="1">
 
+    <TextView
+        android:id="@+id/tvLength"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="10dp"
+        android:text="Length"
+        android:textAppearance="@style/Base.TextAppearance.AppCompat.Medium.Inverse"
+        android:layout_marginTop="2dp"
+        android:layout_gravity="right"
+        android:minWidth="50dp" />
+
     <LinearLayout
         android:orientation="vertical"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
         <TextView
@@ -18,21 +29,30 @@
             android:textAppearance="@style/Base.TextAppearance.AppCompat.Large.Inverse"
             android:layout_marginLeft="10dp" />
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Date"
-            android:id="@+id/tvDate"
-            android:layout_marginLeft="20dp"
-            android:textAppearance="@style/Base.TextAppearance.AppCompat.Small.Inverse" />
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Recorded"
+                android:id="@+id/textView"
+                android:layout_marginLeft="10dp"
+                android:textAppearance="@style/Base.TextAppearance.AppCompat.Small.Inverse" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Date"
+                android:id="@+id/tvDate"
+                android:layout_marginLeft="5dp"
+                android:textAppearance="@style/Base.TextAppearance.AppCompat.Small.Inverse"
+                android:layout_gravity="right" />
+
+        </LinearLayout>
+
     </LinearLayout>
 
-    <TextView
-        android:id="@+id/tvLength"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="10dp"
-        android:text="Length"
-        android:textAppearance="@style/Base.TextAppearance.AppCompat.Medium.Inverse"
-        android:layout_marginTop="2dp" />
 </LinearLayout>

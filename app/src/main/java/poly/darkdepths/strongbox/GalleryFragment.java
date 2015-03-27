@@ -65,19 +65,35 @@ public class GalleryFragment extends Fragment {
                 databaseFile.getPath(),
                 new String(securestore.getKey().getEncoded()), null, SQLiteDatabase.OPEN_READWRITE);
 
-        /*
-        Video video = new Video("Robber Barons", 515L);
-        DataStore.storeVideo(appState, database, video);
 
-        Video videoTwo = new Video("Letters of Insurgents", 420L);
-        DataStore.storeVideo(appState, database, videoTwo);
+        /*
+
+            Video video = new Video("The Responsibility of Intellectuals", 59L);
+            DataStore.storeVideo(appState, database, video);
+
+            Video videoTwo = new Video("Qu'est-ce que la propriété? Recherche sur le principe du droit et du gouvernement", 1L);
+            DataStore.storeVideo(appState, database, videoTwo);
+
+            Video videoThree = new Video("Запечатлённый труд", 342L);
+            DataStore.storeVideo(appState, database, videoThree);
+
+            Video videoFour = new Video("幸徳 傳次郎", 3849239141L);
+            DataStore.storeVideo(appState, database, videoFour);
+
         */
+
+
 
         Cursor cursor = database.rawQuery("SELECT  * FROM " + appState.getTableName(), null);
 
         TodoCursorAdapter adapter = new TodoCursorAdapter(getActivity().getApplicationContext(), cursor);
         ListView listView = (ListView) view.findViewById(R.id.listView);
         listView.setAdapter(adapter);
+
+        if (cursor.getCount() != 0) {
+            TextView textView = (TextView) view.findViewById(R.id.lonelyView);
+            textView.setText("");
+        }
 
         database.close();
         return view;
@@ -112,13 +128,20 @@ class TodoCursorAdapter extends CursorAdapter {
         TextView tvBody = (TextView) view.findViewById(R.id.tvBody);
         TextView tvDate = (TextView) view.findViewById(R.id.tvDate);
         TextView tvLength = (TextView) view.findViewById(R.id.tvLength);
+
         // Extract properties from cursor
         String body = cursor.getString(cursor.getColumnIndexOrThrow("title"));
         long raw_date = cursor.getLong(cursor.getColumnIndexOrThrow("time"));
-        long length = cursor.getLong(cursor.getColumnIndex("length"));
+        long raw_length = cursor.getLong(cursor.getColumnIndex("length"));
 
-        DateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        //formatting
+        DateFormat df = DateFormat.getDateTimeInstance();
         String date = df.format(raw_date);
+        long hours  = raw_length / 3600;
+        long minutes = (raw_length % 3600) / 60;
+        long seconds =  raw_length % 60;
+        String length = String.format("%02d:%02d:%02d", hours, minutes, seconds);
+
         // Populate fields with extracted properties
         tvBody.setText(body);
         tvDate.setText(String.valueOf(date));
