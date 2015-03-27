@@ -73,7 +73,6 @@ public class CameraActivity extends ActionBarActivity {
         return true;
     }
 
-
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle presses on the action bar items
@@ -89,24 +88,6 @@ public class CameraActivity extends ActionBarActivity {
                 return super.onOptionsItemSelected(item);
         }
     }
-
-    public void testDatabase(View view) {
-        Globals appState = (Globals) getApplication();
-        Security securestore = appState.getSecurestore();
-
-        SQLiteDatabase.loadLibs(this.getApplicationContext());
-        File databaseFile = getDatabasePath(appState.getDatabaseName());
-
-        SQLiteDatabase database = SQLiteDatabase.openDatabase(databaseFile.getPath(), new String(securestore.getKey().getEncoded()), null, SQLiteDatabase.OPEN_READWRITE);
-
-        List<Video> videoList = DataStore.getAllVideos(appState, database);
-        Video temp = videoList.get(0);
-
-        Log.d("VideoList", temp.getTitle());
-
-        database.close();
-    }
-
 
     /**
      * A {@link FragmentPagerAdapter} that returns a fragment corresponding to
