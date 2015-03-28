@@ -3,6 +3,7 @@ package poly.darkdepths.strongbox;
 import java.io.BufferedOutputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.ByteBuffer;
 import java.util.ArrayDeque;
@@ -44,6 +45,7 @@ import org.jcodec.movtool.Remux;
 
 import info.guardianproject.iocipher.File;
 import info.guardianproject.iocipher.FileDescriptor;
+import info.guardianproject.iocipher.FileInputStream;
 import info.guardianproject.iocipher.FileOutputStream;
 import info.guardianproject.iocipher.VirtualFileSystem;
 
@@ -279,14 +281,44 @@ public class CameraActivity extends ActionBarActivity {
         }
 
          boolean prepareForVideoRecording(){
-            try {
-                FileDescriptor fileDescriptor = new FileOutputStream("file.java").getFD();
+             try {
+                 Camera.PreviewCallback callback = new Camera.PreviewCallback() {
+                     @Override
+                     public void onPreviewFrame(byte[] data, Camera camera) {
+                         if (mIsRecording && mFrameQ != null) {
+                             Camera.Parameters parameters = camera.getParameters();
+                             mLastWidth = parameters.getPreviewSize().width;
+                             mLastHeight = parameters.getPreviewSize().height;
 
-                return true;
-            } catch (Exception e) {
-                e.printStackTrace();
-                return false;
-            }
+                             mPreviewFormat = parameters.getPreviewFormat();
+                             byte[] dataResult = data;
+                             if (mPreCompressFrames) {
+                                 YuvImage yuv = new YuvImage(dataResult, mPreviewFormat, mLastWidth, mLastHeight, null);
+                                 ByteArrayOutputStream out = new ByteArrayOutputStream();
+                                 yuv.compressToJpeg(new Rect(0, 0, mLastWidth, mLastHeight), MediaConstants.sJpegQuality, out);
+                                 dataResult = out.toByteArray();
+                             }
+                             synchronized (mFrameQ) {
+                                 if (data != null) {
+                                     mFrameQ.add(dataResult);
+                                     mFramesTotal++;
+                                     frameCounter++;
+                                     if ((System.currentTimeMillis() - start) >= 1000) {
+                                         mFPS = frameCounter;
+                                         frameCounter = 0;
+                                         start = System.currentTimeMillis();
+                                     }
+                                 }
+                             }
+                         }
+                     }
+                 };
+                 mCamera.setPreviewCallback(callback);
+                 return true;
+             } catch (Exception e) {
+                 e.printStackTrace();
+                 return false;
+             }
         }
 
 
@@ -294,7 +326,7 @@ public class CameraActivity extends ActionBarActivity {
         {
             mFrameQ = new ArrayDeque<byte[]>();
             mFramesTotal = 0;
-            String fileName = "video" + new java.util.Date().getTime() + ".mov";
+            String fileName = "video.mov";
             info.guardianproject.iocipher.File fileOut = new info.guardianproject.iocipher.File(fileName);
 
             try {
@@ -338,13 +370,10 @@ public class CameraActivity extends ActionBarActivity {
 
                     while (mIsRecording || (!mFrameQ.isEmpty()))
                     {
-                        Log.d("recording", "this part");
 
                         if (mFrameQ.peek() != null)
                         {
                             byte[] data = mFrameQ.pop();
-
-                            Log.d("recording", "frame received");
 
                             muxer.addFrame(mLastWidth, mLastHeight, ByteBuffer.wrap(data),mFPS);
 
@@ -366,8 +395,6 @@ public class CameraActivity extends ActionBarActivity {
                 }
 
             }
-
-
 
         }
 
@@ -482,7 +509,30 @@ public class CameraActivity extends ActionBarActivity {
 
         private void stopRecording() {
             h.sendEmptyMessageDelayed(1, 2000);
-            mIsRecording = false;
+            //mIsRecording = false;
+
+            String fileName = "video.mov";
+            info.guardianproject.iocipher.File fileIn = new info.guardianproject.iocipher.File(fileName);
+
+            java.io.File fileOut = new java.io.File("/sdcard/test.mov");
+
+
+            try {
+                InputStream in = new FileInputStream(fileIn);
+                OutputStream out = new java.io.FileOutputStream(fileOut);
+
+                // Transfer bytes from in to out
+                byte[] buf = new byte[1024];
+                int len;
+                while ((len = in.read(buf)) > 0) {
+                    out.write(buf, 0, len);
+                }
+                in.close();
+                out.close();
+            } catch (Exception e) {
+                e.printStackTrace();
+                Log.d("Copying", "Failed at copying file to sdcard");
+            }
         }
 
         private void setUpVideoButton(View view) {

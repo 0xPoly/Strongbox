@@ -2,7 +2,6 @@ package poly.darkdepths.strongbox;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Environment;
 import android.support.v7.app.ActionBarActivity;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -13,11 +12,6 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import net.sqlcipher.database.SQLiteDatabase;
-
-import info.guardianproject.iocipher.File;
-import info.guardianproject.iocipher.FileOutputStream;
-import info.guardianproject.iocipher.FileReader;
-import info.guardianproject.iocipher.IOCipherFileChannel;
 import info.guardianproject.iocipher.VirtualFileSystem;
 
 /**
@@ -114,6 +108,10 @@ public class Welcome extends ActionBarActivity {
                         new String(securestore.getKey().getEncoded()), null);
                 database.execSQL(appState.getDatabaseInitializer());
                 database.close();
+
+                java.io.File file = new java.io.File(appState.getDbFile());
+                file.mkdirs();
+                file.delete();
 
                 VirtualFileSystem vfs = appState.getVFS();
                 vfs.createNewContainer(appState.getDbFile(), securestore.getKey().getEncoded());
