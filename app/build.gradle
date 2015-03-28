@@ -26,4 +26,7 @@ dependencies {
     compile files('/home/poly/dev/Strongbox/libs/sqlcipher-javadoc.jar')
     compile files('/home/poly/dev/Strongbox/libs/commons-codec.jar')
     compile files('/home/poly/dev/Strongbox/libs/guava-r09.jar')
+    compile files('/home/poly/dev/Strongbox/libs/IOCipher-v0.3-debug.jar')
+    compile files('/home/poly/dev/Strongbox/libs/jcodec-0.1.5.jar')
+    compile files('/home/poly/dev/Strongbox/libs/jcodec-0.1.9.jar')
 }

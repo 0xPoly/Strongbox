@@ -2,6 +2,7 @@ package poly.darkdepths.strongbox;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Environment;
 import android.support.v7.app.ActionBarActivity;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -13,7 +14,11 @@ import android.widget.TextView;
 
 import net.sqlcipher.database.SQLiteDatabase;
 
-import java.io.File;
+import info.guardianproject.iocipher.File;
+import info.guardianproject.iocipher.FileOutputStream;
+import info.guardianproject.iocipher.FileReader;
+import info.guardianproject.iocipher.IOCipherFileChannel;
+import info.guardianproject.iocipher.VirtualFileSystem;
 
 /**
  * This activity handles setting up the app for the very first time and setting up a user password.
@@ -101,7 +106,7 @@ public class Welcome extends ActionBarActivity {
                 securestore.generateKey(password.toCharArray(), Security.getSalt(this.getBaseContext()));
 
                 SQLiteDatabase.loadLibs(this);
-                File databaseFile = getDatabasePath(appState.getDatabaseName());
+                java.io.File databaseFile = getDatabasePath(appState.getDatabaseName());
                 databaseFile.mkdirs();
                 databaseFile.delete();
 
@@ -110,6 +115,8 @@ public class Welcome extends ActionBarActivity {
                 database.execSQL(appState.getDatabaseInitializer());
                 database.close();
 
+                VirtualFileSystem vfs = appState.getVFS();
+                vfs.createNewContainer(appState.getDbFile(), securestore.getKey().getEncoded());
 
                 Intent intent = new Intent(Welcome.this, MainActivity.class);
                 startActivity(intent);

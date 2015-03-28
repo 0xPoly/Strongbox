@@ -1,12 +1,25 @@
 package poly.darkdepths.strongbox;
 
 import java.io.BufferedOutputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.nio.ByteBuffer;
+import java.util.ArrayDeque;
 import java.util.Locale;
+import java.util.logging.Handler;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.graphics.Rect;
 import android.graphics.YuvImage;
 import android.hardware.Camera;
+import android.media.AudioFormat;
+import android.media.AudioRecord;
+import android.media.CamcorderProfile;
+import android.media.MediaRecorder;
+import android.os.Message;
+import android.provider.MediaStore;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -20,8 +33,19 @@ import android.view.MenuItem;
 import android.view.Surface;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
+import android.widget.Toast;
+
+import org.jcodec.common.SeekableByteChannel;
+import org.jcodec.common.logging.Logger;
+import org.jcodec.movtool.Remux;
+
+import info.guardianproject.iocipher.File;
+import info.guardianproject.iocipher.FileDescriptor;
+import info.guardianproject.iocipher.FileOutputStream;
+import info.guardianproject.iocipher.VirtualFileSystem;
 
 public class CameraActivity extends ActionBarActivity {
 
@@ -46,7 +70,13 @@ public class CameraActivity extends ActionBarActivity {
         mViewPager = (ViewPager) findViewById(R.id.pager);
         mViewPager.setAdapter(mSectionsPagerAdapter);
 
+        // no screenshots for you!
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_SECURE,
+                WindowManager.LayoutParams.FLAG_SECURE);
+
     }
+
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -126,13 +156,27 @@ public class CameraActivity extends ActionBarActivity {
         private CameraPreview mPreview;
         private boolean isRecording = false;
 
-        private Camera.Parameters params = null;
-        private int mPreviewFormat = Integer.MIN_VALUE;
-        private int mPreviewWidth = Integer.MIN_VALUE;
-        private int mPreviewHeight = Integer.MIN_VALUE;
-        private Rect mPreviewRect = null;
-        Camera.PreviewCallback callback = null;
-        BufferedOutputStream out = null;
+        private final static String LOG = "VideoJPEGRecorder";
+        private String mFileBasePath = null;
+        private boolean mIsRecording = false;
+        private ArrayDeque<byte[]> mFrameQ = null;
+        private int mLastWidth = -1;
+        private int mLastHeight = -1;
+        private int mPreviewFormat = -1;
+        private ImageToMJPEGMOVMuxer muxer;
+        private AACHelper aac;
+        private boolean useAAC = false;
+        private byte[] audioData;
+        private AudioRecord audioRecord;
+        private int mFramesTotal = 0;
+        private int mFPS = 0;
+        private boolean mPreCompressFrames = true;
+        private OutputStream outputStreamAudio;
+        private info.guardianproject.iocipher.File fileAudio;
+        private int frameCounter = 0;
+        private long start = 0;
+        private boolean isRequest = false;
+        private boolean mInTopHalf = false;
 
         /**
          * Returns a new instance of this fragment for the given section
@@ -204,7 +248,6 @@ public class CameraActivity extends ActionBarActivity {
             preview.addView(mPreview);
             // TODO change 0 to proper camera ID detection
             setCameraDisplayOrientation(this.getActivity(), 0, mCamera);
-            params = mCamera.getParameters();
             return qOpened;
         }
 
@@ -235,40 +278,211 @@ public class CameraActivity extends ActionBarActivity {
             camera.setDisplayOrientation(result);
         }
 
-        protected boolean prepareForVideoRecording(){
-            // setup callback preferences
-            mPreviewFormat = params.getPreviewFormat();
-            final Camera.Size previewSize = params.getPreviewSize();
-            mPreviewWidth = previewSize.width;
-            mPreviewHeight = previewSize.height;
-            mPreviewRect = new Rect(0, 0, mPreviewWidth, mPreviewHeight);
+         boolean prepareForVideoRecording(){
+            try {
+                FileDescriptor fileDescriptor = new FileOutputStream("file.java").getFD();
 
-            callback = new Camera.PreviewCallback()
-            {
-                public void onPreviewFrame(byte[] data, Camera camera)
-                {
-                    // Create JPEG
-                    YuvImage image = new YuvImage(data, mPreviewFormat, mPreviewWidth, mPreviewHeight,
-                            null /* strides */);
-                    // TODO quality adjustment
-                    image.compressToJpeg(mPreviewRect, 50, out);
-
-                    // Send it over the network ...
-                }
-            };
-            return true;
+                return true;
+            } catch (Exception e) {
+                e.printStackTrace();
+                return false;
+            }
         }
 
-        private void startRecording(){
-            out = StreamHandler.getStreamOs();
-            mCamera.setPreviewCallback(callback);
+
+        private void startRecording ()
+        {
+            mFrameQ = new ArrayDeque<byte[]>();
+            mFramesTotal = 0;
+            String fileName = "video" + new java.util.Date().getTime() + ".mov";
+            info.guardianproject.iocipher.File fileOut = new info.guardianproject.iocipher.File(fileName);
+
+            try {
+                mIsRecording = true;
+                if (useAAC)
+                    initAudio(fileOut.getAbsolutePath()+".aac");
+                else
+                    initAudio(fileOut.getAbsolutePath()+".pcm");
+                new Encoder(fileOut).start();
+//start capture
+                startAudioRecording();
+            } catch (Exception e) {
+                Log.d("Video","error starting video",e);
+                Toast.makeText(getActivity(), "Error init'ing video: " + e.getLocalizedMessage(), Toast.LENGTH_LONG).show();
+                //finish();
+            }
+        }
+
+        private class Encoder extends Thread {
+            private static final String TAG = "ENCODER";
+
+            private File fileOut;
+            private FileOutputStream fos;
+
+            public Encoder (File fileOut) throws IOException
+            {
+                this.fileOut = fileOut;
+
+                fos = new info.guardianproject.iocipher.FileOutputStream(fileOut);
+                SeekableByteChannel sbc = new IOCipherFileChannelWrapper(fos.getChannel());
+
+                org.jcodec.common.AudioFormat af = null; //new org.jcodec.common.AudioFormat(org.jcodec.common.AudioFormat.MONO_S16_LE(MediaConstants.sAudioSampleRate));
+
+                muxer = new ImageToMJPEGMOVMuxer(sbc,af);
+            }
+
+            public void run ()
+            {
+
+                try {
+
+                    while (mIsRecording || (!mFrameQ.isEmpty()))
+                    {
+                        Log.d("recording", "this part");
+
+                        if (mFrameQ.peek() != null)
+                        {
+                            byte[] data = mFrameQ.pop();
+
+                            Log.d("recording", "frame received");
+
+                            muxer.addFrame(mLastWidth, mLastHeight, ByteBuffer.wrap(data),mFPS);
+
+                        }
+
+                    }
+
+                    muxer.finish();
+
+                    fos.close();
+
+                    //setResult(Activity.RESULT_OK, new Intent().putExtra(MediaStore.EXTRA_OUTPUT, fileOut.getAbsolutePath()));
+
+                    //if (isRequest)
+                        //finish();
+
+                } catch (Exception e) {
+                    Log.e(TAG, "IO", e);
+                }
+
+            }
+
+
+
+        }
+
+        android.os.Handler h = new android.os.Handler()
+        {
+            @Override
+            public void handleMessage(Message msg) {
+                // TODO Auto-generated method stub
+                super.handleMessage(msg);
+
+                if (msg.what == 0)
+                {
+                    int frames = msg.getData().getInt("frames");
+                }
+                else if (msg.what == 1)
+                {
+                    mIsRecording = false; //stop recording
+
+                    if (aac != null)
+                        aac.stopRecording();
+                }
+            }
+
+        };
+
+        private void initAudio(final String audioPath) throws Exception {
+
+            fileAudio  = new File(audioPath);
+
+            outputStreamAudio = new BufferedOutputStream(new info.guardianproject.iocipher.FileOutputStream(fileAudio),8192*8);
+
+            if (useAAC)
+            {
+                aac = new AACHelper();
+                aac.setEncoder(MediaConstants.sAudioSampleRate, MediaConstants.sAudioChannels, MediaConstants.sAudioBitRate);
+            }
+            else
+            {
+
+                int minBufferSize = AudioRecord.getMinBufferSize(MediaConstants.sAudioSampleRate,
+                        MediaConstants.sChannelConfigIn,
+                        AudioFormat.ENCODING_PCM_16BIT)*8;
+
+                audioData = new byte[minBufferSize];
+
+                int audioSource = MediaRecorder.AudioSource.CAMCORDER;
+
+                /*
+                if (mCamera.getCameraDirection() == Camera.CameraInfo.CAMERA_FACING_FRONT)
+                {
+                    audioSource = MediaRecorder.AudioSource.MIC;
+
+                }
+                */
+
+                audioRecord = new AudioRecord(audioSource,
+                        MediaConstants.sAudioSampleRate,
+                        MediaConstants.sChannelConfigIn,
+                        AudioFormat.ENCODING_PCM_16BIT,
+                        minBufferSize);
+            }
+        }
+
+        private void startAudioRecording ()
+        {
+            Thread thread = new Thread ()
+            {
+                public void run ()
+                {
+                    if (useAAC)
+                    {
+                        try {
+                            aac.startRecording(outputStreamAudio);
+                        } catch (IOException e) {
+                            // TODO Auto-generated catch block
+                            e.printStackTrace();
+                        }
+                    }
+                    else
+                    {
+                        audioRecord.startRecording();
+
+                        while(mIsRecording){
+                            int audioDataBytes = audioRecord.read(audioData, 0, audioData.length);
+                            if (AudioRecord.ERROR_INVALID_OPERATION != audioDataBytes
+                                    && outputStreamAudio != null) {
+                                try {
+                                    outputStreamAudio.write(audioData,0,audioDataBytes);
+
+                                    //muxer.addAudio(ByteBuffer.wrap(audioData, 0, audioData.length));
+                                } catch (IOException e) {
+                                    e.printStackTrace();
+                                }
+                            }
+                        }
+
+                        audioRecord.stop();
+                        try {
+                            outputStreamAudio.flush();
+                            outputStreamAudio.close();
+                        } catch (IOException e) {
+                            // TODO Auto-generated catch block
+                            e.printStackTrace();
+                        }
+                    }
+
+
+                }
+            };
+            thread.start();
         }
 
         private void stopRecording() {
-            mCamera.setPreviewCallback(null);
-            if (out != null) {
-                StreamHandler.closeStreamOs(out);
-            }
+            h.sendEmptyMessageDelayed(1, 2000);
+            mIsRecording = false;
         }
 
         private void setUpVideoButton(View view) {
@@ -313,6 +527,8 @@ public class CameraActivity extends ActionBarActivity {
                     }
             );
         }
+
+
 
         /**
          * clean up after preview is finished
