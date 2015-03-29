@@ -24,7 +24,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textAppearance="?android:attr/textAppearanceMedium"
-            android:id="@+id/match_warn"
+            android:id="@+id/pass_warn"
             android:paddingTop="10dp"
             android:textStyle="bold"
             android:textColor="@android:color/holo_red_light" />
