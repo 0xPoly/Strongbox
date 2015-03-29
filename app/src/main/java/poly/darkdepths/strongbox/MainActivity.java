@@ -21,9 +21,11 @@ public class MainActivity extends Activity{
         Globals   appState    = (Globals) getApplicationContext();
         Security  securestore = appState.getSecurestore();
 
-        File file = new File("/data/data/poly.darkdepths.strongbox/databases/store.db");
+        Boolean SQLfileExists = new File("/data/data/poly.darkdepths.strongbox/databases/store.db").exists();
+        Boolean IOCdbExists = new File(appState.getDbFile()).exists();
 
-        if (!((file.exists() && securestore.getSalt(getApplicationContext())  != null))) {
+        // TODO check if IOCipher database exists
+        if (!((SQLfileExists && (securestore.getSalt(getApplicationContext()) != null) && IOCdbExists))) {
             // first time running app
             Intent intent = new Intent(MainActivity.this, Welcome.class);
             startActivity(intent);
