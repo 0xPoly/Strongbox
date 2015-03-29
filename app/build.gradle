@@ -29,4 +29,6 @@ dependencies {
     compile files('/home/poly/dev/Strongbox/libs/IOCipher-v0.3-debug.jar')
     compile files('/home/poly/dev/Strongbox/libs/jcodec-0.1.5.jar')
     compile files('/home/poly/dev/Strongbox/libs/jcodec-0.1.9.jar')
+    compile files('/home/poly/dev/Strongbox/libs/IOCipher-v0.3-2-g926b982.jar')
+    compile files('/home/poly/dev/Strongbox/libs/jcodec.jar')
 }

@@ -46,19 +46,8 @@ public class MainActivity extends Activity{
     
     @Override
     public boolean onCreateOptionsMenu(Menu menu){
-        getMenuInflater().inflate(R.menu.menu_main, menu);
+        //getMenuInflater().inflate(R.menu.menu_main, menu);
         return true;
     }
-    
-    public void openWelcome(View view) {
-        Intent intent = new Intent(MainActivity.this, Welcome.class);
-        startActivity(intent);
-    }
-
-    public void openCamera(View view) {
-        Intent intent = new Intent(MainActivity.this, CameraActivity.class);
-        startActivity(intent);
-    }
-
 }
 

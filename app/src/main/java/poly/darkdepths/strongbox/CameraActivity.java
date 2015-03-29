@@ -210,9 +210,16 @@ public class CameraActivity extends ActionBarActivity {
 
         @Override
         public void onPause(){
-            super.onPause();
             stopRecording();
             releaseCameraAndPreview();
+
+            Globals appState = (Globals) getActivity().getApplicationContext();
+            VirtualFileSystem vfs = appState.getVFS();
+
+            if (vfs.isMounted())
+                vfs.unmount();
+
+            super.onPause();
         }
 
         @Override
@@ -220,6 +227,13 @@ public class CameraActivity extends ActionBarActivity {
             super.onResume();
             safeCameraOpenInView(getView());
             setUpVideoButton(getView());
+
+            Globals appState = (Globals) getActivity().getApplicationContext();
+            Security securestore = appState.getSecurestore();
+            VirtualFileSystem vfs = appState.getVFS();
+
+            if (!vfs.isMounted())
+                vfs.mount(appState.getDbFile(), securestore.getKey().getEncoded());
         }
 
         /**
@@ -484,7 +498,7 @@ public class CameraActivity extends ActionBarActivity {
                                 try {
                                     outputStreamAudio.write(audioData,0,audioDataBytes);
 
-                                    //muxer.addAudio(ByteBuffer.wrap(audioData, 0, audioData.length));
+                                    muxer.addAudio(ByteBuffer.wrap(audioData, 0, audioData.length));
                                 } catch (IOException e) {
                                     e.printStackTrace();
                                 }
@@ -509,6 +523,7 @@ public class CameraActivity extends ActionBarActivity {
 
         private void stopRecording() {
             h.sendEmptyMessageDelayed(1, 2000);
+            //mCamera.setPreviewCallback(null);
             //mIsRecording = false;
 
             String fileName = "video.mov";
@@ -533,6 +548,9 @@ public class CameraActivity extends ActionBarActivity {
                 e.printStackTrace();
                 Log.d("Copying", "Failed at copying file to sdcard");
             }
+
+
+
         }
 
         private void setUpVideoButton(View view) {
@@ -586,6 +604,7 @@ public class CameraActivity extends ActionBarActivity {
         private void releaseCameraAndPreview(){
             // TODO
             if (mCamera != null) {
+                mCamera.setPreviewCallback(null);
                 mCamera.stopPreview();
                 mCamera.release();
                 mCamera = null;
