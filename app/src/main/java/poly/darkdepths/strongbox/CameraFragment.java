@@ -105,19 +105,6 @@ public class CameraFragment extends Fragment {
     }
 
     @Override
-    public void onPause(){
-        releaseCameraAndPreview();
-
-        Globals appState = (Globals) getActivity().getApplicationContext();
-        VirtualFileSystem vfs = appState.getVFS();
-
-        if (vfs.isMounted())
-            vfs.unmount();
-
-        super.onPause();
-    }
-
-    @Override
     public void onResume(){
         super.onResume();
         safeCameraOpenInView(getView());
@@ -132,9 +119,21 @@ public class CameraFragment extends Fragment {
         prepareForVideoRecording();
     }
 
+    @Override
+    public void onPause(){
+        releaseCameraAndPreview();
+
+        Globals appState = (Globals) getActivity().getApplicationContext();
+        VirtualFileSystem vfs = appState.getVFS();
+
+        if (vfs.isMounted())
+            vfs.unmount();
+
+        super.onPause();
+    }
+
     /**
      * safely returns instance of camera
-     * @return
      */
     public static Camera getCameraInstance(){
         Camera c = null;
@@ -195,8 +194,6 @@ public class CameraFragment extends Fragment {
             callback = new Camera.PreviewCallback() {
                 @Override
                 public void onPreviewFrame(byte[] data, Camera camera) {
-                    //Log.d("OnPreviewFrame", "New Frame Recieved");
-
                     if (mIsRecording && mFrameQ != null) {
 
                         Camera.Parameters parameters = camera.getParameters();
@@ -242,7 +239,7 @@ public class CameraFragment extends Fragment {
         }
     }
 
-    public Boolean hookcallback() {
+    public Boolean hookCallback() {
         try {
             mCamera.setPreviewCallback(callback);
             Log.d("Strongbox", "Camera callback hooked");
@@ -412,8 +409,6 @@ public class CameraFragment extends Fragment {
                                 && outputStreamAudio != null) {
                             try {
                                 outputStreamAudio.write(audioData,0,audioDataBytes);
-
-                                //muxer.addAudio(ByteBuffer.wrap(audioData, 0, audioData.length));
                             } catch (IOException e) {
                                 e.printStackTrace();
                             }
@@ -463,7 +458,8 @@ public class CameraFragment extends Fragment {
 
         Cursor cursor = database.rawQuery("SELECT  * FROM " + appState.getTableName(), null);
 
-        TodoCursorAdapter adapter = new TodoCursorAdapter(getActivity().getApplicationContext(), cursor);
+        TodoCursorAdapter adapter = new TodoCursorAdapter(getActivity().getApplicationContext(),
+                cursor);
         ListView listView = (ListView) getActivity().findViewById(R.id.listView);
         listView.setAdapter(adapter);
         listView.invalidateViews();
@@ -491,10 +487,10 @@ public class CameraFragment extends Fragment {
                         recordVideoButton.setBackgroundResource(R.drawable.ic_video_call);
 
                         // Unlock orientation after filming
-                        getActivity().setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
+                        getActivity().setRequestedOrientation(ActivityInfo.
+                                SCREEN_ORIENTATION_UNSPECIFIED);
 
                         stopRecording();
-
                         isRecording = false;
                     } else {
                         recordVideoButton.setBackgroundResource(R.drawable.ic_stop);
@@ -502,15 +498,16 @@ public class CameraFragment extends Fragment {
                         // Lock orientation when filming
                         int currentOrientation = getResources().getConfiguration().orientation;
                         if (currentOrientation == Configuration.ORIENTATION_LANDSCAPE) {
-                            getActivity().setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE);
+                            getActivity().setRequestedOrientation(ActivityInfo.
+                                    SCREEN_ORIENTATION_SENSOR_LANDSCAPE);
                         }
                         else {
-                            getActivity().setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR_PORTRAIT);
+                            getActivity().setRequestedOrientation(ActivityInfo.
+                                    SCREEN_ORIENTATION_SENSOR_PORTRAIT);
                         }
 
-                        hookcallback();
+                        hookCallback();
                         startRecording();
-
                         isRecording = true;
                     }
                 }
