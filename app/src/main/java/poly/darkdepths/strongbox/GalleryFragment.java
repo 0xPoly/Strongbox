@@ -5,9 +5,10 @@ package poly.darkdepths.strongbox;
  */
 
 import android.content.Context;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,11 +16,7 @@ import android.widget.CursorAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import net.sqlcipher.Cursor;
-import net.sqlcipher.database.SQLiteDatabase;
-import java.io.File;
 import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 
 /**
  * The right fragment, containing the gallery previews and access to settings.
@@ -61,6 +58,7 @@ public class GalleryFragment extends Fragment {
         Globals appState = (Globals) getActivity().getApplicationContext();
         Security securestore = appState.getSecurestore();
 
+        /*
         // load encrypted SQLlite database
         SQLiteDatabase.loadLibs(getActivity());
         File databaseFile = getActivity().getDatabasePath(appState.getDatabaseName());
@@ -70,6 +68,9 @@ public class GalleryFragment extends Fragment {
         SQLiteDatabase database = SQLiteDatabase.openDatabase(
                 databaseFile.getPath(),
                 new String(securestore.getKey().getEncoded()), null, SQLiteDatabase.OPEN_READONLY);
+        */
+
+        SQLiteDatabase database = appState.getSQLdatabase();
 
         cursor = database.rawQuery("SELECT  * FROM " + appState.getTableName(), null);
 
@@ -80,10 +81,6 @@ public class GalleryFragment extends Fragment {
         if (cursor.getCount() != 0) {
             TextView textView = (TextView) view.findViewById(R.id.lonelyView);
             textView.setText("");
-        }
-
-        if( cursor != null && cursor.moveToFirst() && false ){
-            cursor.close();
         }
 
         database.close();
@@ -98,23 +95,16 @@ class TodoCursorAdapter extends CursorAdapter {
         super(context, cursor, 0);
     }
 
-    @Override
-    public void bindView(View view, Context context, android.database.Cursor cursor) {
-        bindView(view, context, (Cursor)cursor);
-    }
-
-    public View newView(Context context, android.database.Cursor cursor, ViewGroup parent) {
-        return LayoutInflater.from(context).inflate(R.layout.list_item, parent, false);
-    }
-
     // The newView method is used to inflate a new view and return it,
     // you don't bind any data to the view at this point.
+    @Override
     public View newView(Context context, Cursor cursor, ViewGroup parent) {
         return LayoutInflater.from(context).inflate(R.layout.list_item, parent, false);
     }
 
     // The bindView method is used to bind all data to a given view
     // such as setting the text on a TextView.
+    @Override
     public void bindView(View view, Context context, Cursor cursor) {
         // Find fields to populate in inflated template
         TextView tvBody = (TextView) view.findViewById(R.id.tvBody);

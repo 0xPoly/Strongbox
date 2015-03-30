@@ -1,10 +1,8 @@
 package poly.darkdepths.strongbox;
 
 import android.content.ContentValues;
-import android.provider.Settings;
-
-import net.sqlcipher.Cursor;
-import net.sqlcipher.database.SQLiteDatabase;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -15,7 +13,7 @@ import java.util.List;
  * Created by poly on 3/27/15.
  */
 public class DataStore {
-    public static void storeVideo(Globals appState, SQLiteDatabase database, Video video){
+    public static void storeVideo(Globals appState, android.database.sqlite.SQLiteDatabase database, Video video){
         ContentValues values = new ContentValues();
 
         values.put(appState.getCOLUMN_NAME_TITLE(), video.getTitle());

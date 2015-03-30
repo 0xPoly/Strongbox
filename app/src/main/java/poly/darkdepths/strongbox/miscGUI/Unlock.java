@@ -65,6 +65,7 @@ public class Unlock extends Activity {
             securestore.generateKey(password.toCharArray(),
                     Security.getSalt(this.getBaseContext()));
 
+            /*
             // load encrypted SQLlite database
             // TODO get rid of sqlcipher, use SQLITE within VFS
             SQLiteDatabase.loadLibs(this);
@@ -78,10 +79,22 @@ public class Unlock extends Activity {
 
             // error returned if database isn't closed correctly
             database.close();
+            */
 
             // attempt to open virtual file system
             VirtualFileSystem vfs = appState.getVFS();
             vfs.mount(appState.getDbFile(), securestore.getKey().getEncoded());
+
+
+            // load up SQLDatabase
+            info.guardianproject.iocipher.File SQL = new info.guardianproject.iocipher.File(appState.getSQLdatabaseName());
+            SQL.mkdirs();
+            SQL.delete();
+
+            android.database.sqlite.SQLiteDatabase database = android.database.sqlite.SQLiteDatabase.openOrCreateDatabase(SQL, null);
+            database.close();
+
+            appState.setSQLdatabase(database);
 
             finish();
         } catch (Exception e) {

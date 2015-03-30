@@ -10,6 +10,7 @@ import java.util.ArrayDeque;
 import java.util.Locale;
 
 import android.app.Activity;
+import android.database.Cursor;
 import android.graphics.Rect;
 import android.graphics.YuvImage;
 import android.hardware.Camera;
@@ -35,9 +36,6 @@ import android.view.WindowManager;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ListView;
-
-import net.sqlcipher.Cursor;
-import net.sqlcipher.database.SQLiteDatabase;
 
 import org.jcodec.common.SeekableByteChannel;
 
@@ -599,7 +597,7 @@ public class CameraActivity extends ActionBarActivity {
             h.sendEmptyMessageDelayed(1, 2000);
 
             //mIsRecording = false;
-            isRecording = false;
+            //isRecording = false;
 
             Log.d("Strongbox", "Stopped Recording");
             Log.d("Strongbox", "Total Frames " + mFramesTotal);
@@ -607,6 +605,7 @@ public class CameraActivity extends ActionBarActivity {
             Globals appState = (Globals) getActivity().getApplicationContext();
             Security securestore = appState.getSecurestore();
 
+            /*
             // load encrypted SQLlite database
             // TODO get rid of sqlcipher, use SQLITE within VFS
             SQLiteDatabase.loadLibs(getActivity());
@@ -617,6 +616,8 @@ public class CameraActivity extends ActionBarActivity {
             SQLiteDatabase database = SQLiteDatabase.openDatabase(
                     databaseFile.getPath(),
                     new String(securestore.getKey().getEncoded()), null, SQLiteDatabase.OPEN_READWRITE);
+            */
+            android.database.sqlite.SQLiteDatabase database = appState.getSQLdatabase();
 
             Video temp_video = new Video("Video_" + new java.util.Date().getTime(), 25L);
             DataStore.storeVideo(appState, database, temp_video);

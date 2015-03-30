@@ -5,16 +5,22 @@ import android.database.sqlite.SQLiteDatabase;
 import android.os.Environment;
 
 import info.guardianproject.iocipher.VirtualFileSystem;
+import info.guardianproject.iocipher.File;
 
 /**
  * Created by poly on 3/26/15.
  */
 public class Globals extends Application {
+    // password management globals
     private Security securestore = new Security();
 
+    // IOCipher globals
     VirtualFileSystem vfs = VirtualFileSystem.get();
     private final String dbFile = Environment.getExternalStorageDirectory().getPath()+"/Strongbox/videos.db";
-    private final String dbDir = Environment.getExternalStorageDirectory().getPath()+"/Strongbox/";
+
+    // SQL Database globals
+    private final String SQLdatabaseName = "store.db";
+    private SQLiteDatabase SQLdatabase = null;
 
     private final String TABLE_NAME         = "videos";
     private final String COLUMN_NAME_ID     = "_id";
@@ -23,8 +29,6 @@ public class Globals extends Application {
     private final String COLUMN_NAME_LENGTH = "length";
     private final String COLUMN_NAME_IV     = "iv";
 
-    private SQLiteDatabase SQLdatabase = null;
-    private final String SQLdatabaseName = "store.db";
     private String databaseInitializer =
             "CREATE TABLE " + TABLE_NAME + "("
             + COLUMN_NAME_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
@@ -72,7 +76,11 @@ public class Globals extends Application {
 
     public String getDbFile() { return dbFile; }
 
-    public String getDbDir() { return  dbDir; }
-
     public VirtualFileSystem getVFS() { return vfs; }
+
+    public String getSQLdatabaseName() { return SQLdatabaseName; }
+
+    public SQLiteDatabase getSQLdatabase() { return SQLdatabase; }
+
+    public void setSQLdatabase(SQLiteDatabase db) { this.SQLdatabase = db; }
 }

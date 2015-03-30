@@ -1,6 +1,7 @@
 package poly.darkdepths.strongbox.miscGUI;
 
 import android.content.Intent;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.text.Editable;
@@ -11,7 +12,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
-import net.sqlcipher.database.SQLiteDatabase;
+//import net.sqlcipher.database.SQLiteDatabase;
 
 import java.io.File;
 
@@ -106,6 +107,7 @@ public class Welcome extends ActionBarActivity {
                 Security  securestore = appState.getSecurestore();
                 securestore.generateKey(password.toCharArray(), Security.getSalt(this.getBaseContext()));
 
+                /*
                 SQLiteDatabase.loadLibs(this);
                 java.io.File SQLdbFile = getDatabasePath(appState.getDatabaseName());
                 SQLdbFile.mkdirs();
@@ -115,6 +117,7 @@ public class Welcome extends ActionBarActivity {
                         new String(securestore.getKey().getEncoded()), null);
                 database.execSQL(appState.getDatabaseInitializer());
                 database.close();
+                */
 
                 java.io.File file = new java.io.File(appState.getDbFile());
                 file.mkdirs();
@@ -122,6 +125,17 @@ public class Welcome extends ActionBarActivity {
 
                 VirtualFileSystem vfs = appState.getVFS();
                 vfs.createNewContainer(appState.getDbFile(), securestore.getKey().getEncoded());
+                vfs.mount(securestore.getKey().getEncoded());
+
+                info.guardianproject.iocipher.File SQL = new info.guardianproject.iocipher.File(appState.getSQLdatabaseName());
+                SQL.mkdirs();
+                SQL.delete();
+
+                SQLiteDatabase database = SQLiteDatabase.openOrCreateDatabase(SQL, null);
+                database.execSQL(appState.getDatabaseInitializer());
+                database.close();
+
+                appState.setSQLdatabase(database);
 
                 finish();
             } catch (Exception e) {

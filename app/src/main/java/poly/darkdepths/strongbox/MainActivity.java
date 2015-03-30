@@ -2,8 +2,6 @@ package poly.darkdepths.strongbox;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.os.Bundle;
-import android.view.Menu;
 
 import java.io.File;
 
@@ -22,11 +20,10 @@ public class MainActivity extends Activity{
         Globals   appState    = (Globals) getApplicationContext();
         Security  securestore = appState.getSecurestore();
 
-        Boolean SQLfileExists = getDatabasePath(appState.getDatabaseName()).exists();
         Boolean IOCdbExists = new File(appState.getDbFile()).exists();
         Boolean saltExists = Security.getSalt(getApplicationContext()) != null;
 
-        if (!(SQLfileExists && saltExists && IOCdbExists)) {
+        if (!(saltExists && IOCdbExists)) {
             // first time running app
             Intent intent = new Intent(MainActivity.this, Welcome.class);
             startActivity(intent);
