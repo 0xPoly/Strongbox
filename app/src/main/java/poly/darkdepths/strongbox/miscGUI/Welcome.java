@@ -12,6 +12,9 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import net.sqlcipher.database.SQLiteDatabase;
+
+import java.io.File;
+
 import info.guardianproject.iocipher.VirtualFileSystem;
 import poly.darkdepths.strongbox.Globals;
 import poly.darkdepths.strongbox.MainActivity;
@@ -114,17 +117,13 @@ public class Welcome extends ActionBarActivity {
                 database.close();
 
                 java.io.File file = new java.io.File(appState.getDbFile());
-                if (file.exists()) {
-                    file.delete();
-                } else {
-                    file.mkdirs();
-                }
+                file.mkdirs();
+                file.delete();
 
                 VirtualFileSystem vfs = appState.getVFS();
                 vfs.createNewContainer(appState.getDbFile(), securestore.getKey().getEncoded());
 
-                Intent intent = new Intent(Welcome.this, MainActivity.class);
-                startActivity(intent);
+                finish();
             } catch (Exception e) {
                 TextView warning = (TextView) findViewById(R.id.match_warn);
                 warning.setText("Error setting up database");

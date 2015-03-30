@@ -15,24 +15,23 @@ import poly.darkdepths.strongbox.miscGUI.Welcome;
  */
 
 public class MainActivity extends Activity{
-
     @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+    protected void onResume(){
+        super.onResume();
 
         Globals   appState    = (Globals) getApplicationContext();
         Security  securestore = appState.getSecurestore();
 
-        Boolean SQLfileExists = new File("/data/data/poly.darkdepths.strongbox/databases/store.db").exists();
+        Boolean SQLfileExists = getDatabasePath(appState.getDatabaseName()).exists();
         Boolean IOCdbExists = new File(appState.getDbFile()).exists();
+        Boolean saltExists = Security.getSalt(getApplicationContext()) != null;
 
-        // TODO check if IOCipher database exists
-        if (!((SQLfileExists && (securestore.getSalt(getApplicationContext()) != null) && IOCdbExists))) {
+        if (!(SQLfileExists && saltExists && IOCdbExists)) {
             // first time running app
             Intent intent = new Intent(MainActivity.this, Welcome.class);
             startActivity(intent);
         } else if (securestore.getKey() == null) {
-            // password not in memory, prompt user
+            // key not in memory, prompt user
             Intent intent = new Intent(MainActivity.this, Unlock.class);
             startActivity(intent);
         } else {
@@ -40,16 +39,6 @@ public class MainActivity extends Activity{
             Intent intent = new Intent(MainActivity.this, CameraActivity.class);
             startActivity(intent);
         }
-
-
-        // TODO remove this later
-        //setContentView(R.layout.activity_main);
-    }
-    
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu){
-        //getMenuInflater().inflate(R.menu.menu_main, menu);
-        return true;
     }
 }
 

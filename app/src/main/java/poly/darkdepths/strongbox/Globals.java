@@ -1,6 +1,7 @@
 package poly.darkdepths.strongbox;
 
 import android.app.Application;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Environment;
 
 import info.guardianproject.iocipher.VirtualFileSystem;
@@ -10,10 +11,10 @@ import info.guardianproject.iocipher.VirtualFileSystem;
  */
 public class Globals extends Application {
     private Security securestore = new Security();
-    private final String databaseName = "store.db";
 
     VirtualFileSystem vfs = VirtualFileSystem.get();
     private final String dbFile = Environment.getExternalStorageDirectory().getPath()+"/Strongbox/videos.db";
+    private final String dbDir = Environment.getExternalStorageDirectory().getPath()+"/Strongbox/";
 
     private final String TABLE_NAME         = "videos";
     private final String COLUMN_NAME_ID     = "_id";
@@ -22,7 +23,8 @@ public class Globals extends Application {
     private final String COLUMN_NAME_LENGTH = "length";
     private final String COLUMN_NAME_IV     = "iv";
 
-
+    private SQLiteDatabase SQLdatabase = null;
+    private final String SQLdatabaseName = "store.db";
     private String databaseInitializer =
             "CREATE TABLE " + TABLE_NAME + "("
             + COLUMN_NAME_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
@@ -41,7 +43,7 @@ public class Globals extends Application {
     }
 
     public String getDatabaseName() {
-        return this.databaseName;
+        return this.SQLdatabaseName;
     }
 
     public String getDatabaseInitializer(){
@@ -69,6 +71,8 @@ public class Globals extends Application {
     }
 
     public String getDbFile() { return dbFile; }
+
+    public String getDbDir() { return  dbDir; }
 
     public VirtualFileSystem getVFS() { return vfs; }
 }
