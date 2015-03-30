@@ -599,7 +599,7 @@ public class CameraActivity extends ActionBarActivity {
             h.sendEmptyMessageDelayed(1, 2000);
 
             //mIsRecording = false;
-            isRecording = false;
+            //isRecording = false;
 
             Log.d("Strongbox", "Stopped Recording");
             Log.d("Strongbox", "Total Frames " + mFramesTotal);
@@ -617,7 +617,9 @@ public class CameraActivity extends ActionBarActivity {
                     databaseFile.getPath(),
                     new String(securestore.getKey().getEncoded()), null, SQLiteDatabase.OPEN_READWRITE);
 
-            Video temp_video = new Video("Video_" + new java.util.Date().getTime(), 25L);
+            Long time = (long) mFramesTotal/mFPS;
+
+            Video temp_video = new Video("Video_" + new java.util.Date().getTime(), time);
             DataStore.storeVideo(appState, database, temp_video);
 
             Cursor cursor = database.rawQuery("SELECT  * FROM " + appState.getTableName(), null);
