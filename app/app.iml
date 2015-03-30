@@ -85,13 +85,18 @@
     </content>
     <orderEntry type="jdk" jdkName="Android API 21 Platform" jdkType="Android SDK" />
     <orderEntry type="sourceFolder" forTests="false" />
+    <orderEntry type="library" exported="" name="jcodec" level="project" />
     <orderEntry type="library" exported="" name="appcompat-v7-21.0.3" level="project" />
     <orderEntry type="library" exported="" name="sqlcipher-javadoc" level="project" />
     <orderEntry type="library" exported="" name="sqlcipher" level="project" />
     <orderEntry type="library" exported="" name="support-annotations-21.0.3" level="project" />
     <orderEntry type="library" exported="" name="support-v4-21.0.3" level="project" />
+    <orderEntry type="library" exported="" name="IOCipher-v0.3-2-g926b982" level="project" />
     <orderEntry type="library" exported="" name="commons-codec" level="project" />
+    <orderEntry type="library" exported="" name="jcodec-0.1.5" level="project" />
+    <orderEntry type="library" exported="" name="jcodec-0.1.9" level="project" />
     <orderEntry type="library" exported="" name="guava-r09" level="project" />
+    <orderEntry type="library" exported="" name="IOCipher-v0.3-debug" level="project" />
   </component>
 </module>
 

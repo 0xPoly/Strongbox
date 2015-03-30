@@ -1,6 +1,9 @@
 package poly.darkdepths.strongbox;
 
 import android.app.Application;
+import android.os.Environment;
+
+import info.guardianproject.iocipher.VirtualFileSystem;
 
 /**
  * Created by poly on 3/26/15.
@@ -9,12 +12,16 @@ public class Globals extends Application {
     private Security securestore = new Security();
     private final String databaseName = "store.db";
 
+    VirtualFileSystem vfs = VirtualFileSystem.get();
+    private final String dbFile = Environment.getExternalStorageDirectory().getPath()+"/Strongbox/videos.db";
+
     private final String TABLE_NAME         = "videos";
     private final String COLUMN_NAME_ID     = "_id";
     private final String COLUMN_NAME_TITLE  = "title";
     private final String COLUMN_NAME_TIME   = "time";
     private final String COLUMN_NAME_LENGTH = "length";
     private final String COLUMN_NAME_IV     = "iv";
+
 
     private String databaseInitializer =
             "CREATE TABLE " + TABLE_NAME + "("
@@ -60,4 +67,8 @@ public class Globals extends Application {
     public String getCOLUMN_NAME_IV() {
         return COLUMN_NAME_IV;
     }
+
+    public String getDbFile() { return dbFile; }
+
+    public VirtualFileSystem getVFS() { return vfs; }
 }

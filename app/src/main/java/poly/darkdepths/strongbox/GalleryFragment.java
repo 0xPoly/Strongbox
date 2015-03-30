@@ -30,6 +30,7 @@ public class GalleryFragment extends Fragment {
      * fragment.
      */
     private static final String ARG_SECTION_NUMBER = "section_number";
+    private Cursor cursor;
 
     /**
      * Returns a new instance of this fragment for the given section
@@ -44,6 +45,11 @@ public class GalleryFragment extends Fragment {
     }
 
     public GalleryFragment() {
+    }
+
+    public void onDestroy(){
+        super.onDestroy();
+        cursor.close();
     }
 
     @Override
@@ -63,28 +69,9 @@ public class GalleryFragment extends Fragment {
         // or if database is otherwise corrupted
         SQLiteDatabase database = SQLiteDatabase.openDatabase(
                 databaseFile.getPath(),
-                new String(securestore.getKey().getEncoded()), null, SQLiteDatabase.OPEN_READWRITE);
+                new String(securestore.getKey().getEncoded()), null, SQLiteDatabase.OPEN_READONLY);
 
-
-        /*
-
-            Video video = new Video("The Responsibility of Intellectuals", 59L);
-            DataStore.storeVideo(appState, database, video);
-
-            Video videoTwo = new Video("Qu'est-ce que la propriété? Recherche sur le principe du droit et du gouvernement", 1L);
-            DataStore.storeVideo(appState, database, videoTwo);
-
-            Video videoThree = new Video("Запечатлённый труд", 342L);
-            DataStore.storeVideo(appState, database, videoThree);
-
-            Video videoFour = new Video("幸徳 傳次郎", 3849239141L);
-            DataStore.storeVideo(appState, database, videoFour);
-
-        */
-
-
-
-        Cursor cursor = database.rawQuery("SELECT  * FROM " + appState.getTableName(), null);
+        cursor = database.rawQuery("SELECT  * FROM " + appState.getTableName(), null);
 
         TodoCursorAdapter adapter = new TodoCursorAdapter(getActivity().getApplicationContext(), cursor);
         ListView listView = (ListView) view.findViewById(R.id.listView);
@@ -95,7 +82,12 @@ public class GalleryFragment extends Fragment {
             textView.setText("");
         }
 
+        if( cursor != null && cursor.moveToFirst() && false ){
+            cursor.close();
+        }
+
         database.close();
+
         return view;
     }
 }

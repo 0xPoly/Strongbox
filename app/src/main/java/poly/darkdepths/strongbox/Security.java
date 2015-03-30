@@ -32,18 +32,18 @@ public class Security {
 
     public void generateKey(char[] passphraseOrPin, byte[] salt) throws NoSuchAlgorithmException, InvalidKeySpecException {
         // Number of PBKDF2 hardening rounds to use. Above 1000 round NIST recommendation
-        // TODO how much time does this take?
+        // Takes 750 ms on developer's phone
+        // TODO investigate this after merging SQLCipher
         final int iterations = 5000;
 
         // Generate a 256-bit key
         final int outputKeyLength = 256;
 
-        // TODO find a way to make SHA256 work!
+        // Unfortunately, SHA256 isn't supported on the majority of android devices
+        // Downgrading to SHA1 is required
         SecretKeyFactory secretKeyFactory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA1");
         KeySpec keySpec = new PBEKeySpec(passphraseOrPin, salt, iterations, outputKeyLength);
-        SecretKey secretKey = secretKeyFactory.generateSecret(keySpec);
-
-        this.key = secretKey;
+        this.key = secretKeyFactory.generateSecret(keySpec);
     }
 
     private static byte[] generateSalt() {
@@ -78,8 +78,7 @@ public class Security {
 
     /**
      * Retrieves salt from internal storage and returns byte array
-     * @param ctx
-     * @return
+     *
      */
     public static byte[] getSalt(Context ctx) {
         InputStream inputStream;
@@ -90,7 +89,7 @@ public class Security {
         try {
             inputStream = ctx.openFileInput(saltFile);
             dataInputStream = new DataInputStream(inputStream);
-            int length = (int) dataInputStream.available();
+            int length = dataInputStream.available();
             salt = new byte[length];
             dataInputStream.readFully(salt);
         } catch (Exception e) {
@@ -99,35 +98,6 @@ public class Security {
         }
 
         return salt;
-    }
-
-    public static byte[] encrypt(SecretKey key, byte[] input){
-        byte[] output = null;
-        key = new SecretKeySpec(key.getEncoded(), "AES");
-
-
-        try {
-            Cipher cipher = Cipher.getInstance("AES/CBC/PKCS7Padding");
-            cipher.init(Cipher.ENCRYPT_MODE, key);
-            output = cipher.doFinal(input);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return output;
-    }
-
-    public static byte[] decrypt(SecretKey key, byte[] input){
-        byte[] output = null;
-        key = new SecretKeySpec(key.getEncoded(), "AES");
-
-        try {
-            Cipher cipher = Cipher.getInstance("AES/CBC/PKCS7Padding");
-            cipher.init(Cipher.DECRYPT_MODE, key);
-            output = cipher.doFinal(input);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return output;
     }
 
     public static byte[] generateIV() {

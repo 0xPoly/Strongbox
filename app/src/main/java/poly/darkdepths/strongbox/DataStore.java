@@ -48,7 +48,7 @@ public class DataStore {
 class Video {
     private String Title;
     private Long Length;
-    private Long Date;     // 2038 awaits
+    private Long Date;     // 2038 awaits ;)
     private String IV;
 
     public Video(){

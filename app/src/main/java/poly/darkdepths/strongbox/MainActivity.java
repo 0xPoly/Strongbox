@@ -4,9 +4,11 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
-import android.view.View;
 
 import java.io.File;
+
+import poly.darkdepths.strongbox.miscGUI.Unlock;
+import poly.darkdepths.strongbox.miscGUI.Welcome;
 
 /**
  * Entry point for app
@@ -21,9 +23,11 @@ public class MainActivity extends Activity{
         Globals   appState    = (Globals) getApplicationContext();
         Security  securestore = appState.getSecurestore();
 
-        File file = new File("/data/data/poly.darkdepths.strongbox/databases/store.db");
+        Boolean SQLfileExists = new File("/data/data/poly.darkdepths.strongbox/databases/store.db").exists();
+        Boolean IOCdbExists = new File(appState.getDbFile()).exists();
 
-        if (!((file.exists() && securestore.getSalt(getApplicationContext())  != null))) {
+        // TODO check if IOCipher database exists
+        if (!((SQLfileExists && (securestore.getSalt(getApplicationContext()) != null) && IOCdbExists))) {
             // first time running app
             Intent intent = new Intent(MainActivity.this, Welcome.class);
             startActivity(intent);
@@ -44,19 +48,8 @@ public class MainActivity extends Activity{
     
     @Override
     public boolean onCreateOptionsMenu(Menu menu){
-        getMenuInflater().inflate(R.menu.menu_main, menu);
+        //getMenuInflater().inflate(R.menu.menu_main, menu);
         return true;
     }
-    
-    public void openWelcome(View view) {
-        Intent intent = new Intent(MainActivity.this, Welcome.class);
-        startActivity(intent);
-    }
-
-    public void openCamera(View view) {
-        Intent intent = new Intent(MainActivity.this, CameraActivity.class);
-        startActivity(intent);
-    }
-
 }
 

@@ -1,4 +1,4 @@
-package poly.darkdepths.strongbox;
+package poly.darkdepths.strongbox.miscGUI;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -13,6 +13,12 @@ import android.widget.TextView;
 import net.sqlcipher.database.SQLiteDatabase;
 
 import java.io.File;
+
+import info.guardianproject.iocipher.VirtualFileSystem;
+import poly.darkdepths.strongbox.Globals;
+import poly.darkdepths.strongbox.MainActivity;
+import poly.darkdepths.strongbox.R;
+import poly.darkdepths.strongbox.Security;
 
 /**
  * Created by poly on 3/26/15.
@@ -60,6 +66,7 @@ public class Unlock extends Activity {
                     Security.getSalt(this.getBaseContext()));
 
             // load encrypted SQLlite database
+            // TODO get rid of sqlcipher, use SQLITE within VFS
             SQLiteDatabase.loadLibs(this);
             File databaseFile = getDatabasePath(appState.getDatabaseName());
 
@@ -71,6 +78,10 @@ public class Unlock extends Activity {
 
             // error returned if database isn't closed correctly
             database.close();
+
+            // attempt to open virtual file system
+            VirtualFileSystem vfs = appState.getVFS();
+            vfs.mount(appState.getDbFile(), securestore.getKey().getEncoded());
 
             Intent intent = new Intent(Unlock.this, MainActivity.class);
             startActivity(intent);
