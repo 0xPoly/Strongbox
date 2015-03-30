@@ -65,22 +65,6 @@ public class Unlock extends Activity {
             securestore.generateKey(password.toCharArray(),
                     Security.getSalt(this.getBaseContext()));
 
-            /*
-            // load encrypted SQLlite database
-            // TODO get rid of sqlcipher, use SQLITE within VFS
-            SQLiteDatabase.loadLibs(this);
-            File databaseFile = getDatabasePath(appState.getDatabaseName());
-
-            // attempt to open database, this will fail if password is wrong
-            // or if database is otherwise corrupted
-            SQLiteDatabase database = SQLiteDatabase.openDatabase(
-                    databaseFile.getPath(),
-                    new String(securestore.getKey().getEncoded()), null, 0);
-
-            // error returned if database isn't closed correctly
-            database.close();
-            */
-
             // attempt to open virtual file system
             VirtualFileSystem vfs = appState.getVFS();
             vfs.mount(appState.getDbFile(), securestore.getKey().getEncoded());

@@ -107,18 +107,6 @@ public class Welcome extends ActionBarActivity {
                 Security  securestore = appState.getSecurestore();
                 securestore.generateKey(password.toCharArray(), Security.getSalt(this.getBaseContext()));
 
-                /*
-                SQLiteDatabase.loadLibs(this);
-                java.io.File SQLdbFile = getDatabasePath(appState.getDatabaseName());
-                SQLdbFile.mkdirs();
-                SQLdbFile.delete();
-
-                SQLiteDatabase database = SQLiteDatabase.openOrCreateDatabase(SQLdbFile,
-                        new String(securestore.getKey().getEncoded()), null);
-                database.execSQL(appState.getDatabaseInitializer());
-                database.close();
-                */
-
                 java.io.File file = new java.io.File(appState.getDbFile());
                 file.mkdirs();
                 file.delete();

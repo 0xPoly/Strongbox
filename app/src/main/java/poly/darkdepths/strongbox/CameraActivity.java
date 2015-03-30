@@ -596,27 +596,11 @@ public class CameraActivity extends ActionBarActivity {
         private void stopRecording() {
             h.sendEmptyMessageDelayed(1, 2000);
 
-            //mIsRecording = false;
-            //isRecording = false;
-
             Log.d("Strongbox", "Stopped Recording");
             Log.d("Strongbox", "Total Frames " + mFramesTotal);
 
             Globals appState = (Globals) getActivity().getApplicationContext();
-            Security securestore = appState.getSecurestore();
 
-            /*
-            // load encrypted SQLlite database
-            // TODO get rid of sqlcipher, use SQLITE within VFS
-            SQLiteDatabase.loadLibs(getActivity());
-            java.io.File databaseFile = getActivity().getDatabasePath(appState.getDatabaseName());
-
-            // attempt to open database, this will fail if password is wrong
-            // or if database is otherwise corrupted
-            SQLiteDatabase database = SQLiteDatabase.openDatabase(
-                    databaseFile.getPath(),
-                    new String(securestore.getKey().getEncoded()), null, SQLiteDatabase.OPEN_READWRITE);
-            */
             android.database.sqlite.SQLiteDatabase database = appState.getSQLdatabase();
 
             Video temp_video = new Video("Video_" + new java.util.Date().getTime(), 25L);
