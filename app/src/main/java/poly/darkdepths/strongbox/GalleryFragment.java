@@ -30,6 +30,7 @@ public class GalleryFragment extends Fragment {
      * fragment.
      */
     private static final String ARG_SECTION_NUMBER = "section_number";
+    private Cursor cursor;
 
     /**
      * Returns a new instance of this fragment for the given section
@@ -44,6 +45,11 @@ public class GalleryFragment extends Fragment {
     }
 
     public GalleryFragment() {
+    }
+
+    public void onDestroy(){
+        super.onDestroy();
+        cursor.close();
     }
 
     @Override
@@ -65,7 +71,7 @@ public class GalleryFragment extends Fragment {
                 databaseFile.getPath(),
                 new String(securestore.getKey().getEncoded()), null, SQLiteDatabase.OPEN_READONLY);
 
-        Cursor cursor = database.rawQuery("SELECT  * FROM " + appState.getTableName(), null);
+        cursor = database.rawQuery("SELECT  * FROM " + appState.getTableName(), null);
 
         TodoCursorAdapter adapter = new TodoCursorAdapter(getActivity().getApplicationContext(), cursor);
         ListView listView = (ListView) view.findViewById(R.id.listView);
