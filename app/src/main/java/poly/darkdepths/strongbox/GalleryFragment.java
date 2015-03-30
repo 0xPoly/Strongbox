@@ -76,8 +76,12 @@ public class GalleryFragment extends Fragment {
             textView.setText("");
         }
 
-        //cursor.close();
+        if( cursor != null && cursor.moveToFirst() && false ){
+            cursor.close();
+        }
+
         database.close();
+
         return view;
     }
 }
