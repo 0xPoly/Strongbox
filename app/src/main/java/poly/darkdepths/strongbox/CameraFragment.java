@@ -5,6 +5,8 @@ package poly.darkdepths.strongbox;
  */
 
 import android.app.Activity;
+import android.content.pm.ActivityInfo;
+import android.content.res.Configuration;
 import android.graphics.Rect;
 import android.graphics.YuvImage;
 import android.hardware.Camera;
@@ -76,8 +78,7 @@ public class CameraFragment extends Fragment {
     private info.guardianproject.iocipher.File fileAudio;
     private int frameCounter = 0;
     private long start = 0;
-    private boolean isRequest = false;
-    private boolean mInTopHalf = false;
+    Camera.PreviewCallback callback = null;
 
     /**
      * Returns a new instance of this fragment for the given section
@@ -127,6 +128,8 @@ public class CameraFragment extends Fragment {
 
         if (!vfs.isMounted())
             vfs.mount(appState.getDbFile(), securestore.getKey().getEncoded());
+
+        prepareForVideoRecording();
     }
 
     /**
@@ -189,7 +192,7 @@ public class CameraFragment extends Fragment {
 
     boolean prepareForVideoRecording(){
         try {
-            Camera.PreviewCallback callback = new Camera.PreviewCallback() {
+            callback = new Camera.PreviewCallback() {
                 @Override
                 public void onPreviewFrame(byte[] data, Camera camera) {
                     //Log.d("OnPreviewFrame", "New Frame Recieved");
@@ -205,9 +208,11 @@ public class CameraFragment extends Fragment {
                         byte[] dataResult = data;
 
                         if (mPreCompressFrames) {
-                            YuvImage yuv = new YuvImage(dataResult, mPreviewFormat, mLastWidth, mLastHeight, null);
+                            YuvImage yuv = new YuvImage(dataResult, mPreviewFormat,
+                                    mLastWidth, mLastHeight, null);
                             ByteArrayOutputStream out = new ByteArrayOutputStream();
-                            yuv.compressToJpeg(new Rect(0, 0, mLastWidth, mLastHeight), MediaConstants.sJpegQuality, out);
+                            yuv.compressToJpeg(new Rect(0, 0, mLastWidth, mLastHeight),
+                                    MediaConstants.sJpegQuality, out);
                             dataResult = out.toByteArray();
                         }
 
@@ -228,8 +233,7 @@ public class CameraFragment extends Fragment {
                     }
                 }
             };
-            mCamera.setPreviewCallback(callback);
-            Log.d("Strongbox", "Camera callback setup successfully");
+            Log.d("Strongbox", "Camera callback initialized");
             return true;
         } catch (Exception e) {
             e.printStackTrace();
@@ -238,6 +242,16 @@ public class CameraFragment extends Fragment {
         }
     }
 
+    public Boolean hookcallback() {
+        try {
+            mCamera.setPreviewCallback(callback);
+            Log.d("Strongbox", "Camera callback hooked");
+            return true;
+        } catch (Exception e) {
+            Log.d("Strongbox", "Hooking camera callback failed");
+            return false;
+        }
+    }
 
     private void startRecording ()
     {
@@ -246,7 +260,8 @@ public class CameraFragment extends Fragment {
         mFramesTotal = 0;
 
         String fileName = "video.mov";// + new java.util.Date().getTime() + ".mov";
-        info.guardianproject.iocipher.File fileOut = new info.guardianproject.iocipher.File(mFileBasePath,fileName);
+        info.guardianproject.iocipher.File fileOut = new info.guardianproject.
+                iocipher.File(mFileBasePath,fileName);
 
         try {
             mIsRecording = true;
@@ -260,15 +275,11 @@ public class CameraFragment extends Fragment {
             //start capture
             startAudioRecording();
 
-            //progress.setText("[REC]");
             Log.d("Strongbox", "Started Recording");
         } catch (Exception e) {
             Log.d("Video","error starting video",e);
-            //Toast.makeText(this, "Error init'ing video: " + e.getLocalizedMessage(), Toast.LENGTH_LONG).show();
-            //finish();
         }
     }
-
 
     private class Encoder extends Thread {
         private static final String TAG = "ENCODER";
@@ -324,19 +335,9 @@ public class CameraFragment extends Fragment {
 
         @Override
         public void handleMessage(Message msg) {
-            // TODO Auto-generated method stub
             super.handleMessage(msg);
             if (msg.what == 0) {
                 int frames = msg.getData().getInt("frames");
-                    /*
-                    if (!mIsRecording)
-                        if (frames == 0)
-                            progress.setText("");
-                        else
-                            progress.setText("Processing: " + (mFramesTotal-frames) + '/' +  mFramesTotal);
-                    else
-                        progress.setText("Recording: " + mFramesTotal);
-                        */
             }
             else if (msg.what == 1) {
                 mIsRecording = false; //stop recording
@@ -388,14 +389,10 @@ public class CameraFragment extends Fragment {
 
     private void startAudioRecording ()
     {
-
-
         Thread thread = new Thread ()
         {
-
             public void run ()
             {
-
                 if (useAAC)
                 {
                     try {
@@ -443,9 +440,6 @@ public class CameraFragment extends Fragment {
     private void stopRecording() {
         h.sendEmptyMessageDelayed(1, 2000);
 
-        //mIsRecording = false;
-        //isRecording = false;
-
         Log.d("Strongbox", "Stopped Recording");
         Log.d("Strongbox", "Total Frames " + mFramesTotal);
 
@@ -491,43 +485,51 @@ public class CameraFragment extends Fragment {
         final ImageButton recordVideoButton = (ImageButton)view.findViewById(R.id.recordButton);
 
         recordVideoButton.setOnClickListener(
-                new View.OnClickListener() {
-                    public void onClick(View v) {
-                        if (isRecording) {
-                            recordVideoButton.setBackgroundResource(R.drawable.ic_video_call);
-                            stopRecording();
+            new View.OnClickListener() {
+                public void onClick(View v) {
+                    if (isRecording) {
+                        recordVideoButton.setBackgroundResource(R.drawable.ic_video_call);
 
-                            isRecording = false;
-                        } else {
-                            if (prepareForVideoRecording()) {
-                                recordVideoButton.setBackgroundResource(R.drawable.ic_stop);
-                                startRecording();
+                        // Unlock orientation after filming
+                        getActivity().setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
 
-                                isRecording = true;
-                            } else {
-                                //recordVideoButton.setBackgroundResource(R.drawable.ic_video_call);
-                                // Something has gone wrong! Release the camera
-                                Log.d("STRONGBOX", "Failed to init camera");
-                                isRecording = false;
-                            }
+                        stopRecording();
+
+                        isRecording = false;
+                    } else {
+                        recordVideoButton.setBackgroundResource(R.drawable.ic_stop);
+
+                        // Lock orientation when filming
+                        int currentOrientation = getResources().getConfiguration().orientation;
+                        if (currentOrientation == Configuration.ORIENTATION_LANDSCAPE) {
+                            getActivity().setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE);
                         }
+                        else {
+                            getActivity().setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR_PORTRAIT);
+                        }
+
+                        hookcallback();
+                        startRecording();
+
+                        isRecording = true;
                     }
                 }
+            }
         );
     }
 
     private void setUpGalleryButton(final View view) {
         final ImageButton galleryButton = (ImageButton)view.findViewById(R.id.galleryButton);
         galleryButton.setOnClickListener(
-                new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        // switch to gallery tab on click
-                        ViewPager viewPager = (ViewPager) getActivity().findViewById(R.id.pager);
-                        viewPager.setCurrentItem(1);
+            new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    // switch to gallery tab on click
+                    ViewPager viewPager = (ViewPager) getActivity().findViewById(R.id.pager);
+                    viewPager.setCurrentItem(1);
 
-                    }
                 }
+            }
         );
     }
 
