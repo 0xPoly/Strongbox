@@ -608,7 +608,6 @@ public class CameraActivity extends ActionBarActivity {
             Security securestore = appState.getSecurestore();
 
             // load encrypted SQLlite database
-            // TODO get rid of sqlcipher, use SQLITE within VFS
             SQLiteDatabase.loadLibs(getActivity());
             java.io.File databaseFile = getActivity().getDatabasePath(appState.getDatabaseName());
 

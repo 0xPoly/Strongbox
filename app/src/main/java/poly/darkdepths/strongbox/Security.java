@@ -33,7 +33,6 @@ public class Security {
     public void generateKey(char[] passphraseOrPin, byte[] salt) throws NoSuchAlgorithmException, InvalidKeySpecException {
         // Number of PBKDF2 hardening rounds to use. Above 1000 round NIST recommendation
         // Takes 750 ms on developer's phone
-        // TODO investigate this after merging SQLCipher
         final int iterations = 5000;
 
         // Generate a 256-bit key

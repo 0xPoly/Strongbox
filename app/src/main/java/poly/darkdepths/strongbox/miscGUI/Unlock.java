@@ -83,8 +83,7 @@ public class Unlock extends Activity {
             VirtualFileSystem vfs = appState.getVFS();
             vfs.mount(appState.getDbFile(), securestore.getKey().getEncoded());
 
-            Intent intent = new Intent(Unlock.this, MainActivity.class);
-            startActivity(intent);
+            finish();
         } catch (Exception e) {
             e.printStackTrace();
             TextView warning = (TextView) findViewById(R.id.pass_warn);
