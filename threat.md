@@ -22,6 +22,8 @@ Threats
 -------
 ### Bad Passwords
 > Individuals pick good passwords, but people pick bad ones. This is not going to change.
+
+
 ### Flash based storage
 Flash based storage, the primary storage type on most (if not all) smartphones is notorious for being difficult to securely delete. Due to wear-levelling technologies, the only way to ensure a particular file is deleted is to wipe the entire filesytem. This is not feasible on most smartphones.
 ### Physical Attacks
