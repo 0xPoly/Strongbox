@@ -34,7 +34,7 @@ public class ImageToMJPEGMOVMuxer {
     private Size size;
     private String imageType = "jpeg "; //or "png ";
     private AudioFormat af = null;
-    private int timeScale = 20;
+    private int timeScale = 10;
     public ImageToMJPEGMOVMuxer(SeekableByteChannel ch, AudioFormat af) throws IOException {
         this.ch = ch;
         this.af = af;
