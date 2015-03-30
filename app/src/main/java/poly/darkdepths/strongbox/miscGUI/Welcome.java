@@ -1,4 +1,4 @@
-package poly.darkdepths.strongbox;
+package poly.darkdepths.strongbox.miscGUI;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -13,6 +13,10 @@ import android.widget.TextView;
 
 import net.sqlcipher.database.SQLiteDatabase;
 import info.guardianproject.iocipher.VirtualFileSystem;
+import poly.darkdepths.strongbox.Globals;
+import poly.darkdepths.strongbox.MainActivity;
+import poly.darkdepths.strongbox.R;
+import poly.darkdepths.strongbox.Security;
 
 /**
  * This activity handles setting up the app for the very first time and setting up a user password.
@@ -95,7 +99,7 @@ public class Welcome extends ActionBarActivity {
             createButton.setEnabled(false);
         } else {
             try {
-                Globals   appState    = (Globals) getApplicationContext();
+                Globals appState    = (Globals) getApplicationContext();
                 Security  securestore = appState.getSecurestore();
                 securestore.generateKey(password.toCharArray(), Security.getSalt(this.getBaseContext()));
 

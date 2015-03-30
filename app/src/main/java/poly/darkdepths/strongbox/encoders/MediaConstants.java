@@ -1,4 +1,4 @@
-package poly.darkdepths.strongbox;
+package poly.darkdepths.strongbox.encoders;
 
 /**
  * Created by poly on 3/28/15.

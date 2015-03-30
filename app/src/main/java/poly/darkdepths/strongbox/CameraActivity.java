@@ -45,6 +45,10 @@ import info.guardianproject.iocipher.File;
 import info.guardianproject.iocipher.FileInputStream;
 import info.guardianproject.iocipher.FileOutputStream;
 import info.guardianproject.iocipher.VirtualFileSystem;
+import poly.darkdepths.strongbox.encoders.AACHelper;
+import poly.darkdepths.strongbox.encoders.ImageToMJPEGMOVMuxer;
+import poly.darkdepths.strongbox.encoders.MediaConstants;
+import poly.darkdepths.strongbox.io.IOCipherFileChannelWrapper;
 
 public class CameraActivity extends ActionBarActivity {
 

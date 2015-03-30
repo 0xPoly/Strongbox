@@ -4,9 +4,11 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
-import android.view.View;
 
 import java.io.File;
+
+import poly.darkdepths.strongbox.miscGUI.Unlock;
+import poly.darkdepths.strongbox.miscGUI.Welcome;
 
 /**
  * Entry point for app

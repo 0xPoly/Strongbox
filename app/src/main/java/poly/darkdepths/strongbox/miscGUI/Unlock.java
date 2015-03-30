@@ -1,4 +1,4 @@
-package poly.darkdepths.strongbox;
+package poly.darkdepths.strongbox.miscGUI;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -15,6 +15,10 @@ import net.sqlcipher.database.SQLiteDatabase;
 import java.io.File;
 
 import info.guardianproject.iocipher.VirtualFileSystem;
+import poly.darkdepths.strongbox.Globals;
+import poly.darkdepths.strongbox.MainActivity;
+import poly.darkdepths.strongbox.R;
+import poly.darkdepths.strongbox.Security;
 
 /**
  * Created by poly on 3/26/15.
