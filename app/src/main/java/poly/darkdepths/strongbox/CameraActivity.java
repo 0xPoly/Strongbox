@@ -135,8 +135,15 @@ public class CameraActivity extends ActionBarActivity {
         // Handle presses on the action bar items
         switch (item.getItemId()) {
             case R.id.action_lock:
+                Globals appState = (Globals) getApplicationContext();
+                if(appState.getVFS().isMounted()) {
+                    appState.getVFS().unmount();
+                }
+
+                // THIS IS STUPID
                 System.runFinalization();
                 System.exit(0);
+
                 return true;
             case R.id.action_settings:
                 //openSettings();
