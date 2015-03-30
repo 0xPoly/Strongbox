@@ -32,18 +32,18 @@ public class Security {
 
     public void generateKey(char[] passphraseOrPin, byte[] salt) throws NoSuchAlgorithmException, InvalidKeySpecException {
         // Number of PBKDF2 hardening rounds to use. Above 1000 round NIST recommendation
-        // TODO how much time does this take?
+        // Takes 750 ms on developer's phone
+        // TODO investigate this after merging SQLCipher
         final int iterations = 5000;
 
         // Generate a 256-bit key
         final int outputKeyLength = 256;
 
-        // TODO find a way to make SHA256 work!
+        // Unfortunately, SHA256 isn't supported on the majority of android devices
+        // Downgrading to SHA1 is required
         SecretKeyFactory secretKeyFactory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA1");
         KeySpec keySpec = new PBEKeySpec(passphraseOrPin, salt, iterations, outputKeyLength);
-        SecretKey secretKey = secretKeyFactory.generateSecret(keySpec);
-
-        this.key = secretKey;
+        this.key = secretKeyFactory.generateSecret(keySpec);
     }
 
     private static byte[] generateSalt() {
