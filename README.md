@@ -6,12 +6,9 @@ Encrypted Video Recording for Android. Currently in early alpha development. **N
 
 (features here)
 
-Threat Model/Design Document
----------------------------
-
-Build Instructions
-------------------
-TODO
+Threat Model
+------------
+See [threat.md](threat.md)
 
 TODO
 ----
