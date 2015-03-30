@@ -78,8 +78,7 @@ public class Security {
 
     /**
      * Retrieves salt from internal storage and returns byte array
-     * @param ctx
-     * @return
+     *
      */
     public static byte[] getSalt(Context ctx) {
         InputStream inputStream;
@@ -90,7 +89,7 @@ public class Security {
         try {
             inputStream = ctx.openFileInput(saltFile);
             dataInputStream = new DataInputStream(inputStream);
-            int length = (int) dataInputStream.available();
+            int length = dataInputStream.available();
             salt = new byte[length];
             dataInputStream.readFully(salt);
         } catch (Exception e) {
@@ -99,35 +98,6 @@ public class Security {
         }
 
         return salt;
-    }
-
-    public static byte[] encrypt(SecretKey key, byte[] input){
-        byte[] output = null;
-        key = new SecretKeySpec(key.getEncoded(), "AES");
-
-
-        try {
-            Cipher cipher = Cipher.getInstance("AES/CBC/PKCS7Padding");
-            cipher.init(Cipher.ENCRYPT_MODE, key);
-            output = cipher.doFinal(input);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return output;
-    }
-
-    public static byte[] decrypt(SecretKey key, byte[] input){
-        byte[] output = null;
-        key = new SecretKeySpec(key.getEncoded(), "AES");
-
-        try {
-            Cipher cipher = Cipher.getInstance("AES/CBC/PKCS7Padding");
-            cipher.init(Cipher.DECRYPT_MODE, key);
-            output = cipher.doFinal(input);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return output;
     }
 
     public static byte[] generateIV() {
