@@ -10,6 +10,7 @@ import java.util.ArrayDeque;
 import java.util.Locale;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.graphics.Rect;
 import android.graphics.YuvImage;
 import android.hardware.Camera;
@@ -32,6 +33,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 
+import android.webkit.MimeTypeMap;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ListView;
@@ -49,8 +51,8 @@ import poly.darkdepths.strongbox.encoders.AACHelper;
 import poly.darkdepths.strongbox.encoders.ImageToMJPEGMOVMuxer;
 import poly.darkdepths.strongbox.encoders.MediaConstants;
 import poly.darkdepths.strongbox.io.IOCipherFileChannelWrapper;
+import poly.darkdepths.strongbox.player.MjpegViewerActivity;
 
-// TODO rotating while recording crashes app
 public class CameraActivity extends ActionBarActivity {
 
     SectionsPagerAdapter mSectionsPagerAdapter;
@@ -61,15 +63,24 @@ public class CameraActivity extends ActionBarActivity {
     ViewPager mViewPager;
 
     public void magic(View view) {
-        String fileName = "video.mov";
-        info.guardianproject.iocipher.File fileIn = new info.guardianproject.iocipher.File(fileName);
 
-        java.io.File fileOut = new java.io.File("/sdcard/test.mov");
+        String fileName = "/video.mov";
+        info.guardianproject.iocipher.File file = new info.guardianproject.iocipher.File(fileName);
+        file.exists();
 
-        String fileName1 = "video.mov.pcm";
-        info.guardianproject.iocipher.File fileIn1 = new info.guardianproject.iocipher.File(fileName1);
+        String fileExtension = MimeTypeMap.getFileExtensionFromUrl(file.getAbsolutePath());
+        String mimeType = MimeTypeMap.getSingleton().getMimeTypeFromExtension(fileExtension);
 
-        java.io.File fileOut1 = new java.io.File("/sdcard/test.mov.pcm");
+        if (fileExtension.equals("mp4") || mimeType.startsWith("video")) {
+            Intent intent = new Intent(CameraActivity.this, MjpegViewerActivity.class);
+            intent.setType(mimeType);
+            intent.putExtra("video", file.getAbsolutePath());
+            startActivity(intent);
+        }
+
+
+        /*
+        java.io.File fileOut = new java.io.File("/sdcard/test.pcm");
 
         try {
             InputStream in = new FileInputStream(fileIn);
@@ -87,23 +98,8 @@ public class CameraActivity extends ActionBarActivity {
             e.printStackTrace();
             Log.d("Copying", "Failed at copying file to sdcard");
         }
+        */
 
-        try {
-            InputStream in = new FileInputStream(fileIn1);
-            OutputStream out = new java.io.FileOutputStream(fileOut1);
-
-            // Transfer bytes from in to out
-            byte[] buf = new byte[1024];
-            int len;
-            while ((len = in.read(buf)) > 0) {
-                out.write(buf, 0, len);
-            }
-            in.close();
-            out.close();
-        } catch (Exception e) {
-            e.printStackTrace();
-            Log.d("Copying", "Failed at copying file to sdcard");
-        }
     }
 
     @Override
