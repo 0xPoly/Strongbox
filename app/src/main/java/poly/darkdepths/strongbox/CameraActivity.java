@@ -133,13 +133,15 @@ public class CameraActivity extends ActionBarActivity {
     }
 
     private void timeout() {
-        Globals appState = (Globals) getApplicationContext();
+        final Globals appState = (Globals) getApplicationContext();
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
-                if(!isAppOnForeground(getApplicationContext()))
+                if(!isAppOnForeground(getApplicationContext())) {
                     Log.d("CameraActivity", "Timeout reached. Closing down application.");
-                    System.exit(0);
+                    appState.getSecurestore().destroyKey();
+                    finish();
+                }
             }
         }, appState.getTimeout());
     }

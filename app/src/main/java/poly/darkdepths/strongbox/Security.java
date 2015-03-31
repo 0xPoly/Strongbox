@@ -45,6 +45,10 @@ public class Security {
         this.key = secretKeyFactory.generateSecret(keySpec);
     }
 
+    public void destroyKey() {
+        key = null;
+    }
+
     private static byte[] generateSalt() {
         // Above 128 bit NIST recommendation
         final int saltLength = 32;
