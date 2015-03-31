@@ -14,12 +14,16 @@ import poly.darkdepths.strongbox.encoders.MediaConstants;
 import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.List;
 
 import android.app.Activity;
+import android.app.ActivityManager;
+import android.content.Context;
 import android.media.AudioFormat;
 import android.media.AudioManager;
 import android.media.AudioTrack;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.view.Window;
 import android.view.WindowManager;
@@ -173,6 +177,34 @@ public class MjpegViewerActivity extends Activity {
         if (at!=null)
             at.stop();
 
+        timeout();
     }
 
+
+    private void timeout() {
+        Globals appState = (Globals) getApplicationContext();
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                if (!isAppOnForeground(getApplicationContext()))
+                    Log.d(TAG, "Timeout reached. Closing down application.");
+                    System.exit(0);
+            }
+        }, appState.getTimeout());
+    }
+
+    private boolean isAppOnForeground(Context context) {
+        ActivityManager activityManager = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
+        List<ActivityManager.RunningAppProcessInfo> appProcesses = activityManager.getRunningAppProcesses();
+        if (appProcesses == null) {
+            return false;
+        }
+        final String packageName = context.getPackageName();
+        for (ActivityManager.RunningAppProcessInfo appProcess : appProcesses) {
+            if (appProcess.importance == ActivityManager.RunningAppProcessInfo.IMPORTANCE_FOREGROUND && appProcess.processName.equals(packageName)) {
+                return true;
+            }
+        }
+        return false;
+    }
 }

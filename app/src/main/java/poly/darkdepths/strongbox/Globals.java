@@ -34,6 +34,8 @@ public class Globals extends Application {
             + COLUMN_NAME_IV + " TEXT"
             + ")";
 
+    private int timeout = 300000; // 5 minutes by default
+
     public Security getSecurestore() {
         return this.securestore;
     }
@@ -75,4 +77,6 @@ public class Globals extends Application {
     public String getDbDir() { return  dbDir; }
 
     public VirtualFileSystem getVFS() { return vfs; }
+
+    public int getTimeout() { return timeout; }
 }

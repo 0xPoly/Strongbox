@@ -7,9 +7,12 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.ByteBuffer;
 import java.util.ArrayDeque;
+import java.util.List;
 import java.util.Locale;
 
 import android.app.Activity;
+import android.app.ActivityManager;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Rect;
 import android.graphics.YuvImage;
@@ -17,6 +20,7 @@ import android.hardware.Camera;
 import android.media.AudioFormat;
 import android.media.AudioRecord;
 import android.media.MediaRecorder;
+import android.os.Handler;
 import android.os.Message;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v4.app.Fragment;
@@ -122,7 +126,38 @@ public class CameraActivity extends ActionBarActivity {
 
     }
 
+    @Override
+    protected void onPause(){
+        super.onPause();
+        timeout();
+    }
 
+    private void timeout() {
+        Globals appState = (Globals) getApplicationContext();
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                if(!isAppOnForeground(getApplicationContext()))
+                    Log.d("CameraActivity", "Timeout reached. Closing down application.");
+                    System.exit(0);
+            }
+        }, appState.getTimeout());
+    }
+
+    private boolean isAppOnForeground(Context context) {
+        ActivityManager activityManager = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
+        List<ActivityManager.RunningAppProcessInfo> appProcesses = activityManager.getRunningAppProcesses();
+        if (appProcesses == null) {
+            return false;
+        }
+        final String packageName = context.getPackageName();
+        for (ActivityManager.RunningAppProcessInfo appProcess : appProcesses) {
+            if (appProcess.importance == ActivityManager.RunningAppProcessInfo.IMPORTANCE_FOREGROUND && appProcess.processName.equals(packageName)) {
+                return true;
+            }
+        }
+        return false;
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
