@@ -1,7 +1,5 @@
 package poly.darkdepths.strongbox.miscGUI;
 
-import android.app.Activity;
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.text.Editable;
@@ -18,7 +16,6 @@ import java.io.File;
 
 import info.guardianproject.iocipher.VirtualFileSystem;
 import poly.darkdepths.strongbox.Globals;
-import poly.darkdepths.strongbox.MainActivity;
 import poly.darkdepths.strongbox.R;
 import poly.darkdepths.strongbox.Security;
 

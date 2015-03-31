@@ -3,6 +3,10 @@ package poly.darkdepths.strongbox.player;
 /**
  * Created by poly on 3/31/15.
  */
+
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+
 import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
 import java.io.DataInputStream;
@@ -10,9 +14,6 @@ import java.io.EOFException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.util.Log;
 
 public class MjpegInputStream extends DataInputStream {
     private static final String TAG = "MjpegInputStream";

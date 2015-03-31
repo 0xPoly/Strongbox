@@ -1,60 +1,25 @@
 package poly.darkdepths.strongbox;
 
-import java.io.BufferedOutputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.nio.ByteBuffer;
-import java.util.ArrayDeque;
-import java.util.List;
-import java.util.Locale;
-
-import android.app.Activity;
 import android.app.ActivityManager;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Rect;
-import android.graphics.YuvImage;
-import android.hardware.Camera;
-import android.media.AudioFormat;
-import android.media.AudioRecord;
-import android.media.MediaRecorder;
+import android.os.Bundle;
 import android.os.Handler;
-import android.os.Message;
-import android.support.v7.app.ActionBarActivity;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
-import android.os.Bundle;
 import android.support.v4.view.ViewPager;
+import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.Surface;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.WindowManager;
-
 import android.webkit.MimeTypeMap;
-import android.widget.FrameLayout;
-import android.widget.ImageButton;
-import android.widget.ListView;
 
-import net.sqlcipher.Cursor;
-import net.sqlcipher.database.SQLiteDatabase;
+import java.util.List;
+import java.util.Locale;
 
-import org.jcodec.common.SeekableByteChannel;
-
-import info.guardianproject.iocipher.File;
-import info.guardianproject.iocipher.FileInputStream;
-import info.guardianproject.iocipher.FileOutputStream;
-import info.guardianproject.iocipher.VirtualFileSystem;
-import poly.darkdepths.strongbox.encoders.AACHelper;
-import poly.darkdepths.strongbox.encoders.ImageToMJPEGMOVMuxer;
-import poly.darkdepths.strongbox.encoders.MediaConstants;
-import poly.darkdepths.strongbox.io.IOCipherFileChannelWrapper;
 import poly.darkdepths.strongbox.player.MjpegViewerActivity;
 
 public class CameraActivity extends ActionBarActivity {

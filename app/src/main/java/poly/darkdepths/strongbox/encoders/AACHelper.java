@@ -3,10 +3,6 @@ package poly.darkdepths.strongbox.encoders;
 /**
  * Created by poly on 3/28/15.
  */
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.nio.ByteBuffer;
 
 import android.annotation.TargetApi;
 import android.media.AudioFormat;
@@ -19,6 +15,11 @@ import android.media.MediaFormat;
 import android.media.MediaRecorder.AudioSource;
 import android.os.Build;
 import android.util.Log;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.nio.ByteBuffer;
 
 //from here: http://stackoverflow.com/questions/21804390/pcm-aac-encoder-pcmdecoder-in-real-time-with-correct-optimization
 

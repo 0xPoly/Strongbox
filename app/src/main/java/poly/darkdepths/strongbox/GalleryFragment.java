@@ -7,7 +7,6 @@ package poly.darkdepths.strongbox;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,9 +16,9 @@ import android.widget.TextView;
 
 import net.sqlcipher.Cursor;
 import net.sqlcipher.database.SQLiteDatabase;
+
 import java.io.File;
 import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 
 /**
  * The right fragment, containing the gallery previews and access to settings.
