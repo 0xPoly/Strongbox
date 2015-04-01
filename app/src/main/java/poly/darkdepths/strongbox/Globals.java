@@ -21,7 +21,6 @@ public class Globals extends Application {
     private final String COLUMN_NAME_TITLE  = "title";
     private final String COLUMN_NAME_TIME   = "time";
     private final String COLUMN_NAME_LENGTH = "length";
-    private final String COLUMN_NAME_IV     = "iv";
 
     private SQLiteDatabase SQLdatabase = null;
     private final String SQLdatabaseName = "store.db";
@@ -30,8 +29,7 @@ public class Globals extends Application {
             + COLUMN_NAME_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
             + COLUMN_NAME_TITLE + " TEXT, "
             + COLUMN_NAME_TIME + " INTEGER, "
-            + COLUMN_NAME_LENGTH + " INTEGER, "
-            + COLUMN_NAME_IV + " TEXT"
+            + COLUMN_NAME_LENGTH + " INTEGER"
             + ")";
 
     private int timeout = 300000; // 5 minutes by default
@@ -66,10 +64,6 @@ public class Globals extends Application {
 
     public String getCOLUMN_NAME_LENGTH() {
         return COLUMN_NAME_LENGTH;
-    }
-
-    public String getCOLUMN_NAME_IV() {
-        return COLUMN_NAME_IV;
     }
 
     public String getDbFile() { return dbFile; }

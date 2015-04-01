@@ -20,7 +20,6 @@ public class DataStore {
         values.put(appState.getCOLUMN_NAME_TITLE(), video.getTitle());
         values.put(appState.getCOLUMN_NAME_LENGTH(), video.getLength());
         values.put(appState.getCOLUMN_NAME_TIME(), video.getDate());
-        values.put(appState.getCOLUMN_NAME_IV(), video.getIV());
 
         database.insert(appState.getTableName(), null, values);
     }
@@ -35,7 +34,6 @@ public class DataStore {
                 video.setTitle(cursor.getString(1));
                 video.setDate(cursor.getLong(2));
                 video.setLength(cursor.getLong(3));
-                video.setIV(cursor.getString(4));
                 // Adding video to list
                 videoList.add(video);
             } while (cursor.moveToNext());
@@ -48,7 +46,6 @@ class Video {
     private String Title;
     private Long Length;
     private Long Date;     // 2038 awaits ;)
-    private String IV;
 
     public Video(){
 
@@ -60,9 +57,6 @@ class Video {
 
         Date date = new java.util.Date();
         setDate(date.getTime());
-
-        // TODO get rid of this, using IOCipher instead
-        this.IV = Arrays.toString(Security.generateIV());
     }
 
     public String getTitle() {
@@ -89,11 +83,4 @@ class Video {
         Date = date;
     }
 
-    public String getIV() {
-        return IV;
-    }
-
-    public void setIV(String iv) {
-        this.IV = iv;
-    }
 }
