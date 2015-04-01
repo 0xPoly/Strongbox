@@ -25,6 +25,3 @@ Special thanks to:
 * FoxDog Studios for [MJPEG streaming implementation](https://foxdogstudios.com/peepers)
 
 This is a free open-source program distirbuted under the [GNU General Public License](/LICENSE). Comments, suggestions and pull requests are all highly encouraged.
-
-## Thanks ##
-
