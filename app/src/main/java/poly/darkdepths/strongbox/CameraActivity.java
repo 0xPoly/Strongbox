@@ -31,54 +31,10 @@ public class CameraActivity extends ActionBarActivity {
      */
     ViewPager mViewPager;
 
-    public void magic(View view) {
-
-        /*
-
-        String fileName = "/video.mov";
-        info.guardianproject.iocipher.File file = new info.guardianproject.iocipher.File(fileName);
-        file.exists();
-
-        String fileExtension = MimeTypeMap.getFileExtensionFromUrl(file.getAbsolutePath());
-        String mimeType = MimeTypeMap.getSingleton().getMimeTypeFromExtension(fileExtension);
-
-        if (fileExtension.equals("mp4") || mimeType.startsWith("video")) {
-            Intent intent = new Intent(CameraActivity.this, MjpegViewerActivity.class);
-            intent.setType(mimeType);
-            intent.putExtra("video", file.getAbsolutePath());
-            startActivity(intent);
-        }
-
-        */
-
-        /*
-        java.io.File fileOut = new java.io.File("/sdcard/test.pcm");
-
-        try {
-            InputStream in = new FileInputStream(fileIn);
-            OutputStream out = new java.io.FileOutputStream(fileOut);
-
-            // Transfer bytes from in to out
-            byte[] buf = new byte[4096];
-            int len;
-            while ((len = in.read(buf)) > 0) {
-                out.write(buf, 0, len);
-            }
-            in.close();
-            out.close();
-        } catch (Exception e) {
-            e.printStackTrace();
-            Log.d("Copying", "Failed at copying file to sdcard");
-        }
-        */
-
-    }
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_camera);
-
 
         // Create the adapter that will return a fragment for each of the two
         // primary sections of the activity.

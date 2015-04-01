@@ -1,9 +1,5 @@
 package poly.darkdepths.strongbox;
 
-/**
- * Created by poly on 3/27/15.
- */
-
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -84,10 +80,6 @@ public class GalleryFragment extends Fragment {
             textView.setText("");
         }
 
-        if( cursor != null && cursor.moveToFirst() && false ){
-            cursor.close();
-        }
-
         database.close();
 
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -120,6 +112,9 @@ public class GalleryFragment extends Fragment {
     }
 }
 
+/**
+ * Adapter for the Video ListView
+ */
 class TodoCursorAdapter extends CursorAdapter {
 
     public TodoCursorAdapter(Context context, Cursor cursor) {
@@ -167,6 +162,4 @@ class TodoCursorAdapter extends CursorAdapter {
         tvDate.setText(String.valueOf(date));
         tvLength.setText(String.valueOf(length));
     }
-
-
 }

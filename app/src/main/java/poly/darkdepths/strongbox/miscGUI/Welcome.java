@@ -19,6 +19,7 @@ import poly.darkdepths.strongbox.Security;
 
 /**
  * This activity handles setting up the app for the very first time and setting up a user password.
+ * Creates IOCipher and SQLCipher containers, as well as generating a salt.
  */
 
 public class Welcome extends ActionBarActivity {

@@ -9,7 +9,8 @@ import poly.darkdepths.strongbox.miscGUI.Unlock;
 import poly.darkdepths.strongbox.miscGUI.Welcome;
 
 /**
- * Entry point for app
+ * Entry point for app. All activities return here after finish to ensure
+ * the salt, the keys and the IOChipher virual file system are properly initialized.
  */
 
 public class MainActivity extends Activity{
@@ -39,4 +40,3 @@ public class MainActivity extends Activity{
         }
     }
 }
-

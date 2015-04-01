@@ -6,22 +6,27 @@ import android.os.Environment;
 
 import info.guardianproject.iocipher.VirtualFileSystem;
 
-/**
- * Created by poly on 3/26/15.
- */
 public class Globals extends Application {
+    /**
+     * Securestore Instance
+     */
     private Security securestore = new Security();
 
+    /**
+     * IOCipher Encrypted Virtual File System
+     */
     VirtualFileSystem vfs = VirtualFileSystem.get();
     private final String dbFile = Environment.getExternalStorageDirectory().getPath()+"/Strongbox/videos.db";
     private final String dbDir = Environment.getExternalStorageDirectory().getPath()+"/Strongbox/";
 
+    /**
+     * SQLCipher Variables
+     */
     private final String TABLE_NAME         = "videos";
     private final String COLUMN_NAME_ID     = "_id";
     private final String COLUMN_NAME_TITLE  = "title";
     private final String COLUMN_NAME_TIME   = "time";
     private final String COLUMN_NAME_LENGTH = "length";
-    private final String COLUMN_NAME_IV     = "iv";
 
     private SQLiteDatabase SQLdatabase = null;
     private final String SQLdatabaseName = "store.db";
@@ -30,10 +35,10 @@ public class Globals extends Application {
             + COLUMN_NAME_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
             + COLUMN_NAME_TITLE + " TEXT, "
             + COLUMN_NAME_TIME + " INTEGER, "
-            + COLUMN_NAME_LENGTH + " INTEGER, "
-            + COLUMN_NAME_IV + " TEXT"
+            + COLUMN_NAME_LENGTH + " INTEGER"
             + ")";
 
+    // Timeout
     private int timeout = 300000; // 5 minutes by default
 
     public Security getSecurestore() {
@@ -66,10 +71,6 @@ public class Globals extends Application {
 
     public String getCOLUMN_NAME_LENGTH() {
         return COLUMN_NAME_LENGTH;
-    }
-
-    public String getCOLUMN_NAME_IV() {
-        return COLUMN_NAME_IV;
     }
 
     public String getDbFile() { return dbFile; }

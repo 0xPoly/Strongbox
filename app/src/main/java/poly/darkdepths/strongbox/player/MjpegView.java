@@ -1,7 +1,8 @@
 package poly.darkdepths.strongbox.player;
 
 /**
- * Created by poly on 3/31/15.
+ * This class is largely based on the IOCipher example (https://github.com/n8fr8/IOCipherCameraExample).
+ * @author Nathan of the Guardian Project
  */
 
 import android.content.Context;
@@ -42,6 +43,7 @@ public class MjpegView extends SurfaceView implements SurfaceHolder.Callback {
     private int dispWidth;
     private int dispHeight;
     private int displayMode;
+    private int frameDelay = 0;
 
     public class MjpegViewThread extends Thread {
         private SurfaceHolder mSurfaceHolder;
@@ -143,6 +145,9 @@ public class MjpegView extends SurfaceView implements SurfaceHolder.Callback {
                                         ovl = makeFpsOverlay(overlayPaint, fps);
                                     }
                                 }
+                                if (frameDelay > 0)
+                                    Thread.sleep(frameDelay);
+
                             } catch (Exception e) {
                                 e.getStackTrace();
                                 Log.d(TAG, "catch IOException hit in run", e);
@@ -245,5 +250,13 @@ public class MjpegView extends SurfaceView implements SurfaceHolder.Callback {
 
     public void setDisplayMode(int s) {
         displayMode = s;
+    }
+
+    public int getFrameDelay() {
+        return frameDelay;
+    }
+
+    public void setFrameDelay(int frameDelay) {
+        this.frameDelay = frameDelay;
     }
 }

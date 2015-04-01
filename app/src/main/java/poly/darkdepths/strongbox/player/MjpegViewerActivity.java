@@ -1,7 +1,8 @@
 package poly.darkdepths.strongbox.player;
 
 /**
- * Created by poly on 3/31/15.
+ * This class is largely based on the IOCipher example (https://github.com/n8fr8/IOCipherCameraExample).
+ * @author Nathan of the Guardian Project
  */
 
 import android.app.Activity;
@@ -72,7 +73,7 @@ public class MjpegViewerActivity extends Activity {
         try {
 
             mv.setDisplayMode(MjpegView.SIZE_BEST_FIT);
-            //   mv.showFps(true);
+            mv.setFrameDelay(5);
 
             File fileAudio = null;
 
