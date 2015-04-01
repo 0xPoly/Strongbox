@@ -84,10 +84,6 @@ public class GalleryFragment extends Fragment {
             textView.setText("");
         }
 
-        if( cursor != null && cursor.moveToFirst() && false ){
-            cursor.close();
-        }
-
         database.close();
 
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {

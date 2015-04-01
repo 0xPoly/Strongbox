@@ -25,6 +25,7 @@ import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ListView;
+import android.widget.TextView;
 
 import net.sqlcipher.Cursor;
 import net.sqlcipher.database.SQLiteDatabase;
@@ -82,6 +83,7 @@ public class CameraFragment extends Fragment {
     Camera.PreviewCallback callback = null;
     private long startTime = 0;
     private Boolean portrait = false;
+    private Cursor cursor = null;
 
     /**
      * Returns a new instance of this fragment for the given section
@@ -131,6 +133,10 @@ public class CameraFragment extends Fragment {
 
         if (vfs.isMounted())
             vfs.unmount();
+
+        if( cursor != null && cursor.moveToFirst() ){
+            cursor.close();
+        }
 
         super.onPause();
     }
@@ -516,13 +522,18 @@ public class CameraFragment extends Fragment {
         startTime = 0;
 
         // TODO find better way to refresh gallery list
-        Cursor cursor = database.rawQuery("SELECT  * FROM " + appState.getTableName(), null);
+        cursor = database.rawQuery("SELECT  * FROM " + appState.getTableName(), null);
 
         TodoCursorAdapter adapter = new TodoCursorAdapter(getActivity().getApplicationContext(),
                 cursor);
         ListView listView = (ListView) getActivity().findViewById(R.id.listView);
         listView.setAdapter(adapter);
         listView.invalidateViews();
+
+        if (cursor.getCount() != 0) {
+            TextView textView = (TextView) getActivity().findViewById(R.id.lonelyView);
+            textView.setText("");
+        }
 
         // TODO properly close cursor
             /*
