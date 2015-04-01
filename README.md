@@ -18,10 +18,13 @@ For a detailed explanation of what Strongbox can and cannot do, see [threat mode
 ## Contributors and License ##
 
 - [0xPoly](https://twitter.com/0xPoly)
- 
+
+Special thanks to:
+* Guardian Project for [IOCipher](https://guardianproject.info/code/iocipher/)
+* [JCodec Team](https://github.com/jcodec/jcodec)
+* FoxDog Studios for [MJPEG streaming implementation](https://foxdogstudios.com/peepers)
+
 This is a free open-source program distirbuted under the [GNU General Public License](/LICENSE). Comments, suggestions and pull requests are all highly encouraged.
 
 ## Thanks ##
-* Guardian Project for IOCipher
-* JCodec Team
-* FoxDog Studios
+
