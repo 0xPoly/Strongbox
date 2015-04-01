@@ -488,8 +488,6 @@ public class CameraFragment extends Fragment {
                         e.printStackTrace();
                     }
                 }
-
-
             }
         };
         thread.start();
@@ -534,13 +532,6 @@ public class CameraFragment extends Fragment {
             TextView textView = (TextView) getActivity().findViewById(R.id.lonelyView);
             textView.setText("");
         }
-
-        // TODO properly close cursor
-            /*
-            if( cursor != null && cursor.moveToFirst() ){
-                cursor.close();
-            }
-            */
 
         database.close();
 
@@ -597,7 +588,6 @@ public class CameraFragment extends Fragment {
                     // switch to gallery tab on click
                     ViewPager viewPager = (ViewPager) getActivity().findViewById(R.id.pager);
                     viewPager.setCurrentItem(1);
-
                 }
             }
         );

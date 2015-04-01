@@ -163,6 +163,4 @@ class TodoCursorAdapter extends CursorAdapter {
         tvDate.setText(String.valueOf(date));
         tvLength.setText(String.valueOf(length));
     }
-
-
 }
