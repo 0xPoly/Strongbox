@@ -79,6 +79,7 @@ public class CameraFragment extends Fragment {
     private int frameCounter = 0;
     private long start = 0;
     Camera.PreviewCallback callback = null;
+    private long startTime = 0;
 
     /**
      * Returns a new instance of this fragment for the given section
@@ -256,7 +257,9 @@ public class CameraFragment extends Fragment {
 
         mFramesTotal = 0;
 
-        String fileName = "video.mov";// + new java.util.Date().getTime() + ".mov";
+        startTime = new java.util.Date().getTime();
+
+        String fileName = "Video_" + startTime + ".mov";
         info.guardianproject.iocipher.File fileOut = new info.guardianproject.
                 iocipher.File(mFileBasePath,fileName);
 
@@ -451,11 +454,13 @@ public class CameraFragment extends Fragment {
                 databaseFile.getPath(),
                 new String(securestore.getKey().getEncoded()), null, SQLiteDatabase.OPEN_READWRITE);
 
-        Long time = (long) mFramesTotal/mFPS;
-
-        Video temp_video = new Video("Video_" + new java.util.Date().getTime(), time);
+        long videoLength =  (new java.util.Date().getTime() - startTime)/1000;
+        Video temp_video = new Video("Video_" + startTime, videoLength);
         DataStore.storeVideo(appState, database, temp_video);
 
+        startTime = 0;
+
+        // TODO find better way to refresh gallery list
         Cursor cursor = database.rawQuery("SELECT  * FROM " + appState.getTableName(), null);
 
         TodoCursorAdapter adapter = new TodoCursorAdapter(getActivity().getApplicationContext(),

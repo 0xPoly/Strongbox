@@ -33,6 +33,8 @@ public class CameraActivity extends ActionBarActivity {
 
     public void magic(View view) {
 
+        /*
+
         String fileName = "/video.mov";
         info.guardianproject.iocipher.File file = new info.guardianproject.iocipher.File(fileName);
         file.exists();
@@ -47,6 +49,7 @@ public class CameraActivity extends ActionBarActivity {
             startActivity(intent);
         }
 
+        */
 
         /*
         java.io.File fileOut = new java.io.File("/sdcard/test.pcm");

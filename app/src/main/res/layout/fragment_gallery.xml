@@ -32,12 +32,4 @@
         android:layout_centerHorizontal="true"
         android:layout_marginTop="154dp" />
 
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Magic"
-        android:id="@+id/button"
-        android:onClick="magic"
-        android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true" />
 </RelativeLayout>
