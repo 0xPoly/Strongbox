@@ -62,7 +62,7 @@ public class CameraFragment extends Fragment {
     private final static String LOG = "VideoJPEGRecorder";
     private String mFileBasePath = null;
     private boolean mIsRecording = false;
-    private ArrayDeque<byte[]> mFrameQ = null;
+    private ArrayDeque<VideoFrame> mFrameQ = null;
     private int mLastWidth = -1;
     private int mLastHeight = -1;
     private int mPreviewFormat = -1;
@@ -72,7 +72,8 @@ public class CameraFragment extends Fragment {
     private byte[] audioData;
     private AudioRecord audioRecord;
     private int mFramesTotal = 0;
-    private int mFPS = 0;
+    private int mFPS = 15;
+    private long lastTime = 0;
     private boolean mPreCompressFrames = true;
     private OutputStream outputStreamAudio;
     private info.guardianproject.iocipher.File fileAudio;
@@ -80,6 +81,7 @@ public class CameraFragment extends Fragment {
     private long start = 0;
     Camera.PreviewCallback callback = null;
     private long startTime = 0;
+    private Boolean portrait = false;
 
     /**
      * Returns a new instance of this fragment for the given section
@@ -195,40 +197,47 @@ public class CameraFragment extends Fragment {
             callback = new Camera.PreviewCallback() {
                 @Override
                 public void onPreviewFrame(byte[] data, Camera camera) {
-                    if (mIsRecording && mFrameQ != null) {
+                    Camera.Parameters parameters = camera.getParameters();
+                    mLastWidth = parameters.getPreviewSize().width;
+                    mLastHeight = parameters.getPreviewSize().height;
 
-                        Camera.Parameters parameters = camera.getParameters();
-                        mLastWidth = parameters.getPreviewSize().width;
-                        mLastHeight = parameters.getPreviewSize().height;
+                    if (portrait) {
+                        mLastWidth =parameters.getPreviewSize().height;
+                        mLastHeight =parameters.getPreviewSize().width;
+                    }
 
-                        mPreviewFormat = parameters.getPreviewFormat();
+                    mPreviewFormat = parameters.getPreviewFormat();
 
-                        byte[] dataResult = data;
 
-                        if (mPreCompressFrames) {
-                            YuvImage yuv = new YuvImage(dataResult, mPreviewFormat,
-                                    mLastWidth, mLastHeight, null);
-                            ByteArrayOutputStream out = new ByteArrayOutputStream();
-                            yuv.compressToJpeg(new Rect(0, 0, mLastWidth, mLastHeight),
-                                    MediaConstants.sJpegQuality, out);
-                            dataResult = out.toByteArray();
+
+                    byte[] dataResult = data;
+
+                    if (mPreCompressFrames) {
+                        if (portrait)
+                        {
+                            dataResult = rotateYUV420Degree90(data,mLastHeight,mLastWidth);
                         }
+                        YuvImage yuv = new YuvImage(dataResult, mPreviewFormat,
+                                mLastWidth, mLastHeight, null);
+                        ByteArrayOutputStream out = new ByteArrayOutputStream();
+                        yuv.compressToJpeg(new Rect(0, 0, mLastWidth, mLastHeight),
+                                MediaConstants.sJpegQuality, out);
+                        dataResult = out.toByteArray();
+                    }
 
-                        synchronized (mFrameQ) {
-                            if (data != null) {
-                                mFrameQ.add(dataResult);
+                    if (mIsRecording && mFrameQ != null)
+                        synchronized (mFrameQ)
+                        {
+                            if (data != null)
+                            {
+                                VideoFrame vf = new VideoFrame();
+                                vf.image = dataResult;
+                                vf.duration = System.currentTimeMillis() - lastTime;
+                                vf.fps = mFPS;
+                                mFrameQ.add(vf);
                                 mFramesTotal++;
-
-                                frameCounter++;
-                                if ((System.currentTimeMillis() - start) >= 1000) {
-                                    mFPS = frameCounter;
-                                    Log.d("Strongbox","FPS: " + mFPS);
-                                    frameCounter = 0;
-                                    start = System.currentTimeMillis();
-                                }
                             }
                         }
-                    }
                 }
             };
             Log.d("Strongbox", "Camera callback initialized");
@@ -238,6 +247,41 @@ public class CameraFragment extends Fragment {
             Log.d("Strongbox", "Error setting up callback");
             return false;
         }
+    }
+
+    private byte[] rotateYUV420Degree90(byte[] data, int imageWidth, int imageHeight)
+    {
+        byte [] yuv = new byte[imageWidth*imageHeight*3/2];
+        // Rotate the Y luma
+        int i = 0;
+        for(int x = 0;x < imageWidth;x++)
+        {
+            for(int y = imageHeight-1;y >= 0;y--)
+            {
+                yuv[i] = data[y*imageWidth+x];
+                i++;
+            }
+        }
+        // Rotate the U and V color components
+        i = imageWidth*imageHeight*3/2-1;
+        for(int x = imageWidth-1;x > 0;x=x-2)
+        {
+            for(int y = 0;y < imageHeight/2;y++)
+            {
+                yuv[i] = data[(imageWidth*imageHeight)+(y*imageWidth)+x];
+                i--;
+                yuv[i] = data[(imageWidth*imageHeight)+(y*imageWidth)+(x-1)];
+                i--;
+            }
+        }
+        return yuv;
+    }
+
+    private class VideoFrame
+    {
+        byte[] image;
+        long fps;
+        long duration;
     }
 
     public Boolean hookCallback() {
@@ -253,11 +297,12 @@ public class CameraFragment extends Fragment {
 
     private void startRecording ()
     {
-        mFrameQ = new ArrayDeque<byte[]>();
+        mFrameQ = new ArrayDeque<VideoFrame>();
 
         mFramesTotal = 0;
 
         startTime = new java.util.Date().getTime();
+        lastTime = startTime;
 
         String fileName = "Video_" + startTime + ".mov";
         info.guardianproject.iocipher.File fileOut = new info.guardianproject.
@@ -271,7 +316,10 @@ public class CameraFragment extends Fragment {
             else
                 initAudio(fileOut.getAbsolutePath()+".pcm");
 
-            new Encoder(fileOut).start();
+            boolean withEmbeddedAudio = false;
+
+            Encoder encoder = new Encoder(fileOut,mFPS,withEmbeddedAudio);
+            encoder.start();
             //start capture
             startAudioRecording();
 
@@ -287,16 +335,23 @@ public class CameraFragment extends Fragment {
         private File fileOut;
         private FileOutputStream fos;
 
-        public Encoder (File fileOut) throws IOException
+        public Encoder (File fileOut, int baseFramesPerSecond, boolean withEmbeddedAudio)
         {
-            this.fileOut = fileOut;
+            try {
+                this.fileOut = fileOut;
 
-            fos = new info.guardianproject.iocipher.FileOutputStream(fileOut);
-            SeekableByteChannel sbc = new IOCipherFileChannelWrapper(fos.getChannel());
+                fos = new info.guardianproject.iocipher.FileOutputStream(fileOut);
+                SeekableByteChannel sbc = new IOCipherFileChannelWrapper(fos.getChannel());
 
-            org.jcodec.common.AudioFormat af = null;//new org.jcodec.common.AudioFormat(org.jcodec.common.AudioFormat.MONO_S16_LE(MediaConstants.sAudioSampleRate));
+                org.jcodec.common.AudioFormat af = null;
 
-            muxer = new ImageToMJPEGMOVMuxer(sbc,af);
+                if (withEmbeddedAudio)
+                    af = new org.jcodec.common.AudioFormat(org.jcodec.common.AudioFormat.MONO_S16_LE(MediaConstants.sAudioSampleRate));
+
+                muxer = new ImageToMJPEGMOVMuxer(sbc, af, baseFramesPerSecond);
+            } catch (Exception e) {
+                Log.d(TAG, "Initializing encoder failed");
+            }
         }
 
         public void run ()
@@ -306,8 +361,8 @@ public class CameraFragment extends Fragment {
                 {
                     if (mFrameQ.peek() != null)
                     {
-                        byte[] data = mFrameQ.pop();
-                        muxer.addFrame(mLastWidth, mLastHeight, ByteBuffer.wrap(data), mFPS);
+                        VideoFrame vf = mFrameQ.pop();
+                        muxer.addFrame(mLastWidth, mLastHeight, ByteBuffer.wrap(vf.image),vf.fps,vf.duration);
                     }
                 }
 
@@ -505,10 +560,12 @@ public class CameraFragment extends Fragment {
                         if (currentOrientation == Configuration.ORIENTATION_LANDSCAPE) {
                             getActivity().setRequestedOrientation(ActivityInfo.
                                     SCREEN_ORIENTATION_SENSOR_LANDSCAPE);
+                            portrait = false;
                         }
                         else {
                             getActivity().setRequestedOrientation(ActivityInfo.
                                     SCREEN_ORIENTATION_SENSOR_PORTRAIT);
+                            portrait = true;
                         }
 
                         hookCallback();

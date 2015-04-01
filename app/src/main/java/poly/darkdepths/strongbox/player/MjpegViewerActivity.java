@@ -72,7 +72,7 @@ public class MjpegViewerActivity extends Activity {
         try {
 
             mv.setDisplayMode(MjpegView.SIZE_BEST_FIT);
-            //   mv.showFps(true);
+            mv.setFrameDelay(5);
 
             File fileAudio = null;
 
