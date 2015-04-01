@@ -61,6 +61,7 @@ class Video {
         Date date = new java.util.Date();
         setDate(date.getTime());
 
+        // TODO get rid of this, using IOCipher instead
         this.IV = Arrays.toString(Security.generateIV());
     }
 
