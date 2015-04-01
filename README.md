@@ -1,6 +1,6 @@
 Strongbox
 =========
-(screenshot here)
+![ScreenShot](screenshots/camera-screenshot-landscape.png)
 
 Encrypted Video Recording for Android. 
 
