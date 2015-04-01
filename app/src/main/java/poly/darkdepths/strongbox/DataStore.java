@@ -1,7 +1,6 @@
 package poly.darkdepths.strongbox;
 
 import android.content.ContentValues;
-import android.provider.Settings;
 
 import net.sqlcipher.Cursor;
 import net.sqlcipher.database.SQLiteDatabase;

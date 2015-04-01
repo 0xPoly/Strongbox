@@ -3,18 +3,6 @@ package poly.darkdepths.strongbox.player;
 /**
  * Created by poly on 3/31/15.
  */
-import info.guardianproject.iocipher.File;
-import info.guardianproject.iocipher.FileInputStream;
-import info.guardianproject.iocipher.VirtualFileSystem;
-import poly.darkdepths.strongbox.Globals;
-import poly.darkdepths.strongbox.Security;
-import poly.darkdepths.strongbox.encoders.AACHelper;
-import poly.darkdepths.strongbox.encoders.MediaConstants;
-
-import java.io.BufferedInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.List;
 
 import android.app.Activity;
 import android.app.ActivityManager;
@@ -27,6 +15,19 @@ import android.os.Handler;
 import android.util.Log;
 import android.view.Window;
 import android.view.WindowManager;
+
+import java.io.BufferedInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.List;
+
+import info.guardianproject.iocipher.File;
+import info.guardianproject.iocipher.FileInputStream;
+import info.guardianproject.iocipher.VirtualFileSystem;
+import poly.darkdepths.strongbox.Globals;
+import poly.darkdepths.strongbox.Security;
+import poly.darkdepths.strongbox.encoders.AACHelper;
+import poly.darkdepths.strongbox.encoders.MediaConstants;
 
 public class MjpegViewerActivity extends Activity {
     private static final String TAG = "MjpegActivity";
@@ -182,13 +183,15 @@ public class MjpegViewerActivity extends Activity {
 
 
     private void timeout() {
-        Globals appState = (Globals) getApplicationContext();
+        final Globals appState = (Globals) getApplicationContext();
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
-                if (!isAppOnForeground(getApplicationContext()))
+                if (!isAppOnForeground(getApplicationContext())) {
                     Log.d(TAG, "Timeout reached. Closing down application.");
-                    System.exit(0);
+                    appState.getSecurestore().destroyKey();
+                    finish();
+                }
             }
         }, appState.getTimeout());
     }

@@ -2,6 +2,7 @@ package poly.darkdepths.strongbox;
 
 import android.content.Context;
 
+import java.io.DataInputStream;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.security.NoSuchAlgorithmException;
@@ -9,13 +10,9 @@ import java.security.SecureRandom;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.KeySpec;
 
-import javax.crypto.Cipher;
 import javax.crypto.SecretKey;
 import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.PBEKeySpec;
-import javax.crypto.spec.SecretKeySpec;
-
-import java.io.DataInputStream;
 
 
 /**
@@ -43,6 +40,10 @@ public class Security {
         SecretKeyFactory secretKeyFactory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA1");
         KeySpec keySpec = new PBEKeySpec(passphraseOrPin, salt, iterations, outputKeyLength);
         this.key = secretKeyFactory.generateSecret(keySpec);
+    }
+
+    public void destroyKey() {
+        key = null;
     }
 
     private static byte[] generateSalt() {

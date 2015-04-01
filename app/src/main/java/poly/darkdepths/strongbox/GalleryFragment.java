@@ -5,21 +5,26 @@ package poly.darkdepths.strongbox;
  */
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.webkit.MimeTypeMap;
+import android.widget.AdapterView;
 import android.widget.CursorAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
 import net.sqlcipher.Cursor;
 import net.sqlcipher.database.SQLiteDatabase;
+
 import java.io.File;
 import java.text.DateFormat;
-import java.text.SimpleDateFormat;
+
+import poly.darkdepths.strongbox.player.MjpegViewerActivity;
 
 /**
  * The right fragment, containing the gallery previews and access to settings.
@@ -47,11 +52,6 @@ public class GalleryFragment extends Fragment {
     public GalleryFragment() {
     }
 
-    public void onDestroy(){
-        super.onDestroy();
-        cursor.close();
-    }
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -60,6 +60,8 @@ public class GalleryFragment extends Fragment {
         // get Globals
         Globals appState = (Globals) getActivity().getApplicationContext();
         Security securestore = appState.getSecurestore();
+        if (!appState.getVFS().isMounted())
+            appState.getVFS().mount(securestore.getKey().getEncoded());
 
         // load encrypted SQLlite database
         SQLiteDatabase.loadLibs(getActivity());
@@ -88,7 +90,33 @@ public class GalleryFragment extends Fragment {
 
         database.close();
 
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                TextView tvBody = (TextView) view.findViewById(R.id.tvBody);
+                String filename = tvBody.getText().toString() + ".mov";
+                info.guardianproject.iocipher.File file = new info.guardianproject.iocipher.File(filename);
+                Log.d("GalleryFragment", "Attempting to play " + file.getAbsolutePath());
+
+                String fileExtension = MimeTypeMap.getFileExtensionFromUrl(file.getAbsolutePath());
+                String mimeType = MimeTypeMap.getSingleton().getMimeTypeFromExtension(fileExtension);
+
+                if (fileExtension.equals("mp4") || mimeType.startsWith("video")) {
+                    Intent intent = new Intent(getActivity(), MjpegViewerActivity.class);
+                    intent.setType(mimeType);
+                    intent.putExtra("video", file.getAbsolutePath());
+                    startActivity(intent);
+                }
+            }
+        });
+
         return view;
+    }
+
+    @Override
+    public void onDestroy(){
+        super.onDestroy();
+        cursor.close();
     }
 }
 
