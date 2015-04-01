@@ -1,9 +1,5 @@
 package poly.darkdepths.strongbox;
 
-/**
- * Created by poly on 3/27/15.
- */
-
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
