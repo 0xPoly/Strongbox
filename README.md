@@ -1,6 +1,6 @@
 Strongbox
 =========
-Encrypted Video Recording for Android. 
+**BETA** Encrypted Video Recording for Android. 
 
 ![ScreenShot](screenshots/camera-screenshot-landscape.png)
 
@@ -10,9 +10,7 @@ Encrypted Video Recording for Android.
 
 ★ Practical security: Lock feature allows you to instantly close down app to prevent access to recorded videos
 
-★ Export features: Strongbox allows streaming videos directly to your computer to avoid storing unencrypted footage on your memory cards.
-
-
+★ Export safety: Strongbox allows streaming videos directly to your computer to avoid storing unencrypted footage on your memory cards.
 
 Threat Model
 ------------
