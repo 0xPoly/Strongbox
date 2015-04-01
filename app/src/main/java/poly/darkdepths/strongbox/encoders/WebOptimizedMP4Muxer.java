@@ -1,7 +1,8 @@
 package poly.darkdepths.strongbox.encoders;
 
 /**
- * Created by poly on 3/28/15.
+ * This class is largely based on the IOCipher example (https://github.com/n8fr8/IOCipherCameraExample).
+ * @author Nathan of the Guardian Project
  */
 
 import org.jcodec.common.NIOUtils;
