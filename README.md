@@ -14,7 +14,7 @@ Strongbox
 
 Threat Model
 ------------
-For a detailed explanation of what Strongbox can and cannot do, see [threat.md](threat.md).
+For a detailed explanation of what Strongbox can and cannot do, see [threat model](threat.md).
 
 TODO
 ----
