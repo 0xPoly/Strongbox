@@ -86,6 +86,10 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
         }
     }
 
+    /**
+     * Thanks to Seantron
+     * https://stackoverflow.com/questions/5540981/picture-distorted-with-camera-and-getoptimalpreviewsize
+     */
     public Camera.Size getOptimalPreviewSize(List<Camera.Size> sizes, int w, int h) {
         final double ASPECT_TOLERANCE = 0.05;
         double targetRatio = (double) w/h;

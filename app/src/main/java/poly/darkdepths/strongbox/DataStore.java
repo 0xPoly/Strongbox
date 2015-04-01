@@ -11,7 +11,7 @@ import java.util.Date;
 import java.util.List;
 
 /**
- * Created by poly on 3/27/15.
+ * Handles Video objects and storing them into the encrypted SQL database
  */
 public class DataStore {
     public static void storeVideo(Globals appState, SQLiteDatabase database, Video video){
@@ -23,33 +23,12 @@ public class DataStore {
 
         database.insert(appState.getTableName(), null, values);
     }
-
-    public static List<Video> getAllVideos(Globals appState, SQLiteDatabase database) {
-        List<Video> videoList = new ArrayList<Video>();
-
-        Cursor cursor = database.rawQuery("SELECT  * FROM " + appState.getTableName(), null);
-        if (cursor.moveToFirst()) {
-            do {
-                Video video = new Video();
-                video.setTitle(cursor.getString(1));
-                video.setDate(cursor.getLong(2));
-                video.setLength(cursor.getLong(3));
-                // Adding video to list
-                videoList.add(video);
-            } while (cursor.moveToNext());
-        }
-        return  videoList;
-    }
 }
 
 class Video {
     private String Title;
     private Long Length;
-    private Long Date;     // 2038 awaits ;)
-
-    public Video(){
-
-    }
+    private Long Date;
 
     public Video(String title, Long length) {
         this.Title = title;

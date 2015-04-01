@@ -20,7 +20,8 @@ import poly.darkdepths.strongbox.R;
 import poly.darkdepths.strongbox.Security;
 
 /**
- * Created by poly on 3/26/15.
+ * Activity for unlocking Strongbox. Loads keys and salt, sets up IOCipher
+ * and SQLCipher
  */
 public class Unlock extends ActionBarActivity {
     public void onCreate(Bundle savedInstanceState) {

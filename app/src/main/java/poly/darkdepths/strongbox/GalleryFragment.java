@@ -112,6 +112,9 @@ public class GalleryFragment extends Fragment {
     }
 }
 
+/**
+ * Adapter for the Video ListView
+ */
 class TodoCursorAdapter extends CursorAdapter {
 
     public TodoCursorAdapter(Context context, Cursor cursor) {
