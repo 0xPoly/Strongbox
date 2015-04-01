@@ -1,10 +1,15 @@
 Strongbox
 =========
+Encrypted Video Recording for Android. 
 ![ScreenShot](screenshots/camera-screenshot-landscape.png)
 
-Encrypted Video Recording for Android. 
+Features:
 
-(features here)
+★ On-the-fly encryption: Footage is encrypted as it is taken. Only encrypted data is written to disk, leaving no traces of recorded videos.
+
+★ Industry standard security: Strongbox uses industry standard AES-256 encryption in GCM mode to provide both confidentiality and integrity.
+
+★ Export features: Strongbox allows streaming videos directly to your computer to avoid storing unencrypted footage on your memory cards.
 
 Threat Model
 ------------
