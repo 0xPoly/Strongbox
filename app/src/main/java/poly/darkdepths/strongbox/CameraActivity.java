@@ -17,9 +17,12 @@ import android.view.View;
 import android.view.WindowManager;
 import android.webkit.MimeTypeMap;
 
+import java.io.InputStream;
 import java.util.List;
 import java.util.Locale;
 
+import info.guardianproject.iocipher.File;
+import info.guardianproject.iocipher.FileInputStream;
 import poly.darkdepths.strongbox.player.MjpegViewerActivity;
 
 public class CameraActivity extends ActionBarActivity {

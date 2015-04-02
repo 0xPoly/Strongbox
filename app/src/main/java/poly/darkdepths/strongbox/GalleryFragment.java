@@ -1,9 +1,16 @@
 package poly.darkdepths.strongbox;
 
+import android.app.Activity;
+import android.app.AlertDialog;
+import android.app.Dialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.net.wifi.WifiManager;
 import android.os.Bundle;
+import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
+import android.text.format.Formatter;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -11,6 +18,7 @@ import android.view.ViewGroup;
 import android.webkit.MimeTypeMap;
 import android.widget.AdapterView;
 import android.widget.CursorAdapter;
+import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -18,8 +26,11 @@ import net.sqlcipher.Cursor;
 import net.sqlcipher.database.SQLiteDatabase;
 
 import java.io.File;
+import java.io.InputStream;
 import java.text.DateFormat;
 
+import info.guardianproject.iocipher.FileInputStream;
+import info.guardianproject.iocipher.VirtualFileSystem;
 import poly.darkdepths.strongbox.player.MjpegViewerActivity;
 
 /**
@@ -32,6 +43,7 @@ public class GalleryFragment extends Fragment {
      */
     private static final String ARG_SECTION_NUMBER = "section_number";
     private Cursor cursor;
+    private VideoServer videoServer = null;
 
     /**
      * Returns a new instance of this fragment for the given section
@@ -71,7 +83,7 @@ public class GalleryFragment extends Fragment {
 
         cursor = database.rawQuery("SELECT  * FROM " + appState.getTableName(), null);
 
-        TodoCursorAdapter adapter = new TodoCursorAdapter(getActivity().getApplicationContext(), cursor);
+        TodoCursorAdapter adapter = new TodoCursorAdapter(getActivity(), cursor);
         ListView listView = (ListView) view.findViewById(R.id.listView);
         listView.setAdapter(adapter);
 
@@ -105,6 +117,7 @@ public class GalleryFragment extends Fragment {
         return view;
     }
 
+
     @Override
     public void onDestroy(){
         super.onDestroy();
@@ -116,9 +129,12 @@ public class GalleryFragment extends Fragment {
  * Adapter for the Video ListView
  */
 class TodoCursorAdapter extends CursorAdapter {
+    private VideoServer videoserver;
+    private Context context;
 
     public TodoCursorAdapter(Context context, Cursor cursor) {
         super(context, cursor, 0);
+        this.context = context;
     }
 
     @Override
@@ -138,9 +154,9 @@ class TodoCursorAdapter extends CursorAdapter {
 
     // The bindView method is used to bind all data to a given view
     // such as setting the text on a TextView.
-    public void bindView(View view, Context context, Cursor cursor) {
+    public void bindView(final View view, final Context context, Cursor cursor) {
         // Find fields to populate in inflated template
-        TextView tvBody = (TextView) view.findViewById(R.id.tvBody);
+        final TextView tvBody = (TextView) view.findViewById(R.id.tvBody);
         TextView tvDate = (TextView) view.findViewById(R.id.tvDate);
         TextView tvLength = (TextView) view.findViewById(R.id.tvLength);
 
@@ -161,5 +177,42 @@ class TodoCursorAdapter extends CursorAdapter {
         tvBody.setText(body);
         tvDate.setText(String.valueOf(date));
         tvLength.setText(String.valueOf(length));
+
+        // setup share button callback
+        ImageButton button = (ImageButton) view.findViewById(R.id.shareButton);
+        button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String filename = tvBody.getText().toString() + ".mov";
+                info.guardianproject.iocipher.File file = new info.guardianproject.iocipher.File(filename);
+                try {
+                    videoserver = new VideoServer(filename, new FileInputStream(file));
+                    videoserver.start();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    Log.d("VideoSever", "Does file exist?");
+                }
+
+                AlertDialog.Builder builder = new AlertDialog.Builder(context);
+                // Add the buttons
+                WifiManager wm = (WifiManager) view.getContext().getSystemService(Context.WIFI_SERVICE);
+                String ip = Formatter.formatIpAddress(wm.getConnectionInfo().getIpAddress());
+
+                String message = "To share this file with a computer, open a web browser and go to:\nhttp://" + ip +":8080";
+                builder.setMessage(message);
+
+                builder.setTitle("HTTP Server");
+
+                builder.setPositiveButton("Stop Sharing", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        videoserver.stop();
+                        videoserver = null;
+                    }
+                });
+
+                AlertDialog dialog = builder.create();
+                dialog.show();
+            }
+        });
     }
 }

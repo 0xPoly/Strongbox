@@ -122,11 +122,20 @@ public class CameraFragment extends Fragment {
             vfs.mount(appState.getDbFile(), securestore.getKey().getEncoded());
 
         prepareForVideoRecording();
+        hookCallback();
     }
 
     @Override
     public void onPause(){
         releaseCameraAndPreview();
+        super.onPause();
+    }
+
+    @Override
+    public void onDestroy(){
+        if( cursor != null && cursor.moveToFirst()){
+            cursor.close();
+        }
 
         Globals appState = (Globals) getActivity().getApplicationContext();
         VirtualFileSystem vfs = appState.getVFS();
@@ -134,11 +143,7 @@ public class CameraFragment extends Fragment {
         if (vfs.isMounted())
             vfs.unmount();
 
-        if( cursor != null && cursor.moveToFirst() ){
-            cursor.close();
-        }
-
-        super.onPause();
+        super.onDestroy();
     }
 
     /**
@@ -204,17 +209,15 @@ public class CameraFragment extends Fragment {
                 @Override
                 public void onPreviewFrame(byte[] data, Camera camera) {
                     Camera.Parameters parameters = camera.getParameters();
-                    mLastWidth = parameters.getPreviewSize().width;
-                    mLastHeight = parameters.getPreviewSize().height;
+                    mLastWidth = parameters.getPreviewSize().width/2;
+                    mLastHeight = parameters.getPreviewSize().height/2;
 
                     if (portrait) {
-                        mLastWidth =parameters.getPreviewSize().height;
-                        mLastHeight =parameters.getPreviewSize().width;
+                        mLastWidth =parameters.getPreviewSize().height/2;
+                        mLastHeight =parameters.getPreviewSize().width/2;
                     }
 
                     mPreviewFormat = parameters.getPreviewFormat();
-
-
 
                     byte[] dataResult = data;
 
@@ -244,6 +247,14 @@ public class CameraFragment extends Fragment {
                                 mFramesTotal++;
                             }
                         }
+                    frameCounter++;
+
+                    if((System.currentTimeMillis() - start) >= 1000) {
+                        Log.d("Framecounter", "FPS: " + frameCounter);
+                        mFPS = frameCounter;
+                        frameCounter = 0;
+                        start = System.currentTimeMillis();
+                    }
                 }
             };
             Log.d("Strongbox", "Camera callback initialized");
@@ -306,6 +317,7 @@ public class CameraFragment extends Fragment {
         mFrameQ = new ArrayDeque<VideoFrame>();
 
         mFramesTotal = 0;
+        frameCounter = 0;
 
         startTime = new java.util.Date().getTime();
         lastTime = startTime;
@@ -522,7 +534,7 @@ public class CameraFragment extends Fragment {
         // TODO find better way to refresh gallery list
         cursor = database.rawQuery("SELECT  * FROM " + appState.getTableName(), null);
 
-        TodoCursorAdapter adapter = new TodoCursorAdapter(getActivity().getApplicationContext(),
+        TodoCursorAdapter adapter = new TodoCursorAdapter(getActivity(),
                 cursor);
         ListView listView = (ListView) getActivity().findViewById(R.id.listView);
         listView.setAdapter(adapter);

@@ -11,10 +11,15 @@
         android:layout_height="wrap_content"
         android:layout_marginLeft="10dp"
         android:text="Length"
-        android:textAppearance="@style/Base.TextAppearance.AppCompat.Medium.Inverse"
+        android:textAppearance="@style/Base.TextAppearance.AppCompat.Medium"
         android:layout_marginTop="2dp"
-        android:layout_gravity="right"
         android:minWidth="50dp" />
+
+    <ImageButton
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/shareButton"
+        android:src="@android:drawable/ic_menu_share" />
 
     <LinearLayout
         android:orientation="vertical"
@@ -26,7 +31,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Video Name"
-            android:textAppearance="@style/Base.TextAppearance.AppCompat.Large.Inverse"
+            android:textAppearance="@style/Base.TextAppearance.AppCompat.Large"
             android:layout_marginLeft="10dp" />
 
         <LinearLayout
@@ -40,7 +45,7 @@
                 android:text="Recorded"
                 android:id="@+id/textView"
                 android:layout_marginLeft="10dp"
-                android:textAppearance="@style/Base.TextAppearance.AppCompat.Small.Inverse" />
+                android:textAppearance="@style/Base.TextAppearance.AppCompat.Small" />
 
             <TextView
                 android:layout_width="wrap_content"
@@ -48,7 +53,7 @@
                 android:text="Date"
                 android:id="@+id/tvDate"
                 android:layout_marginLeft="5dp"
-                android:textAppearance="@style/Base.TextAppearance.AppCompat.Small.Inverse"
+                android:textAppearance="@style/Base.TextAppearance.AppCompat.Small"
                 android:layout_gravity="right" />
 
         </LinearLayout>
