@@ -1,22 +1,27 @@
 Strongbox
 =========
-(screenshot here)
+**BETA** Encrypted Video Recording for Android. 
 
-Encrypted Video Recording for Android. 
+![ScreenShot](screenshots/camera-screenshot-landscape.png)
 
-(features here)
+★ On-the-fly encryption: Footage is encrypted as it is taken. Only encrypted data is written to disk, leaving no traces of recorded videos.
 
-Threat Model
-------------
-For a detailed explanation of what Strongbox can and cannot do, see [threat.md](threat.md).
+★ Industry standard security: Strongbox uses industry standard AES-256 encryption in GCM mode to provide both confidentiality and integrity.
 
-TODO
-----
-0. Share to computer over HTTPS
-0. Request product testing from [the ISC project](https://iscproject.org/request-product-testing/)
+★ Practical security: Lock feature allows you to instantly close down app to prevent access to recorded videos
 
-Thanks
-------
-* Guardian Project for IOCipher
-* JCodec Team
-* FoxDog Studios
+★ Export safety: Strongbox allows streaming videos directly to your computer to avoid storing unencrypted footage on your memory cards.
+
+## Threat Model ##
+For a detailed explanation of what Strongbox can and cannot do, see [threat model](threat.md).
+
+## Contributors and License ##
+
+- [0xPoly](https://twitter.com/0xPoly)
+
+Special thanks to:
+* Guardian Project for [IOCipher](https://guardianproject.info/code/iocipher/)
+* [JCodec Team](https://github.com/jcodec/jcodec)
+* FoxDog Studios for [MJPEG streaming implementation](https://foxdogstudios.com/peepers)
+
+This is a free open-source program distirbuted under the [GNU General Public License](/LICENSE). Comments, suggestions and pull requests are all highly encouraged.
