@@ -253,9 +253,11 @@ class TodoCursorAdapter extends CursorAdapter {
                 listView.setAdapter(adapter);
                 listView.invalidateViews();
 
+                TextView textView = (TextView) activity.findViewById(R.id.lonelyView);
                 if (cursor.getCount() != 0) {
-                    TextView textView = (TextView) activity.findViewById(R.id.lonelyView);
                     textView.setText("");
+                } else {
+                    textView.setText("No Recorded Videos");
                 }
 
                 database.close();
