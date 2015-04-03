@@ -228,8 +228,10 @@ public class CameraFragment extends Fragment {
                         }
                         YuvImage yuv = new YuvImage(dataResult, mPreviewFormat,
                                 mLastWidth, mLastHeight, null);
+                        byte[] temp = halveYUV420(yuv.getYuvData(), mLastWidth, mLastHeight);
+                        yuv = new YuvImage(temp, mPreviewFormat, mLastWidth/2, mLastHeight/2, null);
                         ByteArrayOutputStream out = new ByteArrayOutputStream();
-                        yuv.compressToJpeg(new Rect(0, 0, mLastWidth, mLastHeight),
+                        yuv.compressToJpeg(new Rect(0, 0, mLastWidth/2, mLastHeight/2),
                                 MediaConstants.sJpegQuality, out);
                         dataResult = out.toByteArray();
                     }
@@ -289,6 +291,28 @@ public class CameraFragment extends Fragment {
                 i--;
                 yuv[i] = data[(imageWidth*imageHeight)+(y*imageWidth)+(x-1)];
                 i--;
+            }
+        }
+        return yuv;
+    }
+
+    public static byte[] halveYUV420(byte[] data, int imageWidth, int imageHeight) {
+        byte[] yuv = new byte[imageWidth/2 * imageHeight/2 * 3 / 2];
+        // halve yuma
+        int i = 0;
+        for (int y = 0; y < imageHeight; y+=2) {
+            for (int x = 0; x < imageWidth; x+=2) {
+                yuv[i] = data[y * imageWidth + x];
+                i++;
+            }
+        }
+        // halve U and V color components
+        for (int y = 0; y < imageHeight / 2; y+=2) {
+            for (int x = 0; x < imageWidth; x += 4) {
+                yuv[i] = data[(imageWidth * imageHeight) + (y * imageWidth) + x];
+                i++;
+                yuv[i] = data[(imageWidth * imageHeight) + (y * imageWidth) + (x + 1)];
+                i++;
             }
         }
         return yuv;
@@ -380,7 +404,7 @@ public class CameraFragment extends Fragment {
                     if (mFrameQ.peek() != null)
                     {
                         VideoFrame vf = mFrameQ.pop();
-                        muxer.addFrame(mLastWidth, mLastHeight, ByteBuffer.wrap(vf.image),vf.fps,vf.duration);
+                        muxer.addFrame(mLastWidth/2, mLastHeight/2, ByteBuffer.wrap(vf.image),vf.fps,vf.duration);
                     }
                 }
 
