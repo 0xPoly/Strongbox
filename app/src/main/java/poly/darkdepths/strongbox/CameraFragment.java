@@ -209,12 +209,12 @@ public class CameraFragment extends Fragment {
                 @Override
                 public void onPreviewFrame(byte[] data, Camera camera) {
                     Camera.Parameters parameters = camera.getParameters();
-                    mLastWidth = parameters.getPreviewSize().width/2;
-                    mLastHeight = parameters.getPreviewSize().height/2;
+                    mLastWidth = parameters.getPreviewSize().width;
+                    mLastHeight = parameters.getPreviewSize().height;
 
                     if (portrait) {
-                        mLastWidth =parameters.getPreviewSize().height/2;
-                        mLastHeight =parameters.getPreviewSize().width/2;
+                        mLastWidth =parameters.getPreviewSize().height;
+                        mLastHeight =parameters.getPreviewSize().width;
                     }
 
                     mPreviewFormat = parameters.getPreviewFormat();
