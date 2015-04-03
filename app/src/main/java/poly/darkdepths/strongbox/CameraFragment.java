@@ -534,9 +534,10 @@ public class CameraFragment extends Fragment {
         // TODO find better way to refresh gallery list
         cursor = database.rawQuery("SELECT  * FROM " + appState.getTableName(), null);
 
-        TodoCursorAdapter adapter = new TodoCursorAdapter(getActivity(),
-                cursor);
         ListView listView = (ListView) getActivity().findViewById(R.id.listView);
+        TodoCursorAdapter adapter = new TodoCursorAdapter(getActivity(),
+                cursor, getActivity());
+
         listView.setAdapter(adapter);
         listView.invalidateViews();
 

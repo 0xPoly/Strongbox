@@ -23,6 +23,12 @@
         android:focusableInTouchMode="true"
         android:src="@android:drawable/ic_menu_share" />
 
+    <ImageButton
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/deleteButton"
+        android:src="@android:drawable/ic_menu_delete" />
+
     <LinearLayout
         android:orientation="vertical"
         android:layout_width="match_parent"

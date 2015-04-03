@@ -37,6 +37,7 @@ import poly.darkdepths.strongbox.player.MjpegViewerActivity;
  * The right fragment, containing the gallery previews and access to settings.
  */
 public class GalleryFragment extends Fragment {
+    ListView listview;
     /**
      * The fragment argument representing the section number for this
      * fragment.
@@ -83,8 +84,9 @@ public class GalleryFragment extends Fragment {
 
         cursor = database.rawQuery("SELECT  * FROM " + appState.getTableName(), null);
 
-        TodoCursorAdapter adapter = new TodoCursorAdapter(getActivity(), cursor);
         ListView listView = (ListView) view.findViewById(R.id.listView);
+        listview = listView;
+        TodoCursorAdapter adapter = new TodoCursorAdapter(getActivity(), cursor, getActivity());
         listView.setAdapter(adapter);
 
         if (cursor.getCount() != 0) {
@@ -131,10 +133,12 @@ public class GalleryFragment extends Fragment {
 class TodoCursorAdapter extends CursorAdapter {
     private VideoServer videoserver;
     private Context context;
+    private Activity activity;
 
-    public TodoCursorAdapter(Context context, Cursor cursor) {
+    public TodoCursorAdapter(Context context, Cursor cursor, Activity activity) {
         super(context, cursor, 0);
         this.context = context;
+        this.activity = activity;
     }
 
     @Override
@@ -212,6 +216,49 @@ class TodoCursorAdapter extends CursorAdapter {
 
                 AlertDialog dialog = builder.create();
                 dialog.show();
+            }
+        });
+
+        ImageButton deleteButton = (ImageButton) view.findViewById(R.id.deleteButton);
+        deleteButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String filename = tvBody.getText().toString();
+
+                String vfsFileName = tvBody.getText().toString() + ".mov";
+                info.guardianproject.iocipher.File file = new info.guardianproject.iocipher.File(vfsFileName);
+                file.delete();
+
+                Globals appState = (Globals) context.getApplicationContext();
+                Security securestore = appState.getSecurestore();
+
+                // load encrypted SQLlite database
+                SQLiteDatabase.loadLibs(context);
+                File databaseFile = context.getDatabasePath(appState.getDatabaseName());
+
+                // attempt to open database, this will fail if password is wrong
+                // or if database is otherwise corrupted
+                SQLiteDatabase database = SQLiteDatabase.openDatabase(
+                        databaseFile.getPath(),
+                        new String(securestore.getKey().getEncoded()), null, 0);
+
+                DataStore.deleteVideo(appState, database, filename);
+
+                Cursor cursor = database.rawQuery("SELECT  * FROM " + appState.getTableName(), null);
+
+                ListView listView = (ListView) activity.findViewById(R.id.listView);
+                TodoCursorAdapter adapter = new TodoCursorAdapter(activity,
+                        cursor, activity);
+
+                listView.setAdapter(adapter);
+                listView.invalidateViews();
+
+                if (cursor.getCount() != 0) {
+                    TextView textView = (TextView) activity.findViewById(R.id.lonelyView);
+                    textView.setText("");
+                }
+
+                database.close();
             }
         });
     }

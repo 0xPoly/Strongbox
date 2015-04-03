@@ -23,6 +23,11 @@ public class DataStore {
 
         database.insert(appState.getTableName(), null, values);
     }
+
+    public static void deleteVideo(Globals appState, SQLiteDatabase database, String title) {
+        String[] magic = {title};
+        database.delete(appState.getTableName(), "title = ?", magic);
+    }
 }
 
 class Video {
