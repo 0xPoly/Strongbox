@@ -58,7 +58,7 @@ public class ImageToMJPEGMOVMuxer {
                 audioTrack.addSampleEntry(MP4Muxer.audioSampleEntry(af));
         }
 // Add packet to video track
-        videoTrack.addFrame(new MP4Packet(buff, frameNo, timeScaleFPS, duration, frameNo, true, null, frameNo, 0));
+        videoTrack.addFrame(new MP4Packet(buff, frameNo, timeScaleFPS, 1, frameNo, true, null, frameNo, 0));
         frameNo++;
     }
     public void addAudio (ByteBuffer buffer) throws IOException

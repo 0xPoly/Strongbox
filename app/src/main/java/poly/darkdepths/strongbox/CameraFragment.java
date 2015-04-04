@@ -414,7 +414,7 @@ public class CameraFragment extends Fragment {
                     if (mFrameQ.peek() != null)
                     {
                         VideoFrame vf = mFrameQ.pop();
-                        muxer.addFrame(mLastWidth/2, mLastHeight/2, ByteBuffer.wrap(vf.image),vf.fps,vf.duration);
+                        muxer.addFrame(mLastWidth/2, mLastHeight/2, ByteBuffer.wrap(vf.image),benchmarkFPS,vf.duration);
                     }
                 }
 
