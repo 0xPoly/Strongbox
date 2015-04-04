@@ -504,27 +504,33 @@ public class CameraFragment extends Fragment {
                 }
                 else
                 {
-                    audioRecord.startRecording();
+                    if (audioRecord.getRecordingState() == AudioRecord.STATE_INITIALIZED) {
+                        audioRecord.startRecording();
 
-                    while(mIsRecording){
-                        int audioDataBytes = audioRecord.read(audioData, 0, audioData.length);
-                        if (AudioRecord.ERROR_INVALID_OPERATION != audioDataBytes
-                                && outputStreamAudio != null) {
-                            try {
-                                outputStreamAudio.write(audioData,0,audioDataBytes);
-                            } catch (IOException e) {
-                                e.printStackTrace();
+                        while (mIsRecording) {
+                            int audioDataBytes = audioRecord.read(audioData, 0, audioData.length);
+                            if (AudioRecord.ERROR_INVALID_OPERATION != audioDataBytes
+                                    && outputStreamAudio != null) {
+                                try {
+                                    outputStreamAudio.write(audioData, 0, audioDataBytes);
+                                } catch (IOException e) {
+                                    e.printStackTrace();
+                                }
                             }
                         }
-                    }
 
-                    audioRecord.stop();
-                    try {
-                        outputStreamAudio.flush();
-                        outputStreamAudio.close();
-                    } catch (IOException e) {
-                        // TODO Auto-generated catch block
-                        e.printStackTrace();
+                        audioRecord.stop();
+                        audioRecord.release();
+
+                        try {
+                            outputStreamAudio.flush();
+                            outputStreamAudio.close();
+                        } catch (IOException e) {
+                            // TODO Auto-generated catch block
+                            e.printStackTrace();
+                        }
+                    } else {
+                        Log.d("AudioRecorder", "Failed to initialize Audiorecorder. Oh Android, how I love you.");
                     }
                 }
             }
