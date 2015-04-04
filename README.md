@@ -4,6 +4,9 @@ Strongbox
 
 ![ScreenShot](screenshots/camera-screenshot-landscape.png)
 
+*[![Play Store Badge](https://developer.android.com/images/brand/en_app_rgb_wo_60.png)](https://play.google.com/store/apps/details?id=poly.darkdepths.strongbox)*
+
+
 ★ On-the-fly encryption: Footage is encrypted as it is taken. Only encrypted data is written to disk, leaving no traces of recorded videos.
 
 ★ Industry standard security: Strongbox uses industry standard AES-256 encryption in GCM mode to provide both confidentiality and integrity.
