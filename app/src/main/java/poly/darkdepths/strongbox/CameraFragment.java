@@ -73,7 +73,7 @@ public class CameraFragment extends Fragment {
     private byte[] audioData;
     private AudioRecord audioRecord;
     private int mFramesTotal = 0;
-    private int mFPS = 15;
+    private int mFPS = -1;
     private long lastTime = 0;
     private boolean mPreCompressFrames = true;
     private OutputStream outputStreamAudio;
@@ -84,6 +84,8 @@ public class CameraFragment extends Fragment {
     private long startTime = 0;
     private Boolean portrait = false;
     private Cursor cursor = null;
+    private int benchmarkFPS = -1;
+    private Boolean benchmarking = false;
 
     /**
      * Returns a new instance of this fragment for the given section
@@ -106,6 +108,7 @@ public class CameraFragment extends Fragment {
         View rootView = inflater.inflate(R.layout.fragment_camera, container, false);
         setUpVideoButton(rootView);
         setUpGalleryButton(rootView);
+
         return rootView;
     }
 
@@ -121,8 +124,11 @@ public class CameraFragment extends Fragment {
         if (!vfs.isMounted())
             vfs.mount(appState.getDbFile(), securestore.getKey().getEncoded());
 
+        int currentOrientation = getResources().getConfiguration().orientation;
+        portrait = (currentOrientation == Configuration.ORIENTATION_PORTRAIT);
+
         prepareForVideoRecording();
-        hookCallback();
+        new Thread(new benchmark()).start();
     }
 
     @Override
@@ -224,12 +230,10 @@ public class CameraFragment extends Fragment {
                     if (mPreCompressFrames) {
                         if (portrait)
                         {
-                            dataResult = rotateYUV420Degree90(data,mLastHeight,mLastWidth);
+                            dataResult = rotateYUV420Degree90(dataResult,mLastHeight,mLastWidth);
                         }
-                        YuvImage yuv = new YuvImage(dataResult, mPreviewFormat,
-                                mLastWidth, mLastHeight, null);
-                        byte[] temp = halveYUV420(yuv.getYuvData(), mLastWidth, mLastHeight);
-                        yuv = new YuvImage(temp, mPreviewFormat, mLastWidth/2, mLastHeight/2, null);
+                        byte[] temp = halveYUV420(dataResult, mLastWidth, mLastHeight);
+                        YuvImage yuv = new YuvImage(temp, mPreviewFormat, mLastWidth/2, mLastHeight/2, null);
                         ByteArrayOutputStream out = new ByteArrayOutputStream();
                         yuv.compressToJpeg(new Rect(0, 0, mLastWidth/2, mLastHeight/2),
                                 MediaConstants.sJpegQuality, out);
@@ -252,8 +256,14 @@ public class CameraFragment extends Fragment {
                     frameCounter++;
 
                     if((System.currentTimeMillis() - start) >= 1000) {
-                        Log.d("Framecounter", "FPS: " + frameCounter);
-                        mFPS = frameCounter;
+                        if (benchmarking) {
+                            mFPS = frameCounter;
+                            benchmarkFPS = frameCounter;
+                            Log.d("Framecounter", "New Benchmark FPS: " + benchmarkFPS);
+                        } else {
+                            Log.d("Recorder", "Recording FPS is: " + frameCounter);
+                        }
+
                         frameCounter = 0;
                         start = System.currentTimeMillis();
                     }
@@ -360,7 +370,7 @@ public class CameraFragment extends Fragment {
 
             boolean withEmbeddedAudio = false;
 
-            Encoder encoder = new Encoder(fileOut,mFPS,withEmbeddedAudio);
+            Encoder encoder = new Encoder(fileOut,benchmarkFPS,withEmbeddedAudio);
             encoder.start();
             //start capture
             startAudioRecording();
@@ -409,14 +419,7 @@ public class CameraFragment extends Fragment {
                 }
 
                 muxer.finish();
-
                 fos.close();
-
-                //setResult(Activity.RESULT_OK, new Intent().putExtra(MediaStore.EXTRA_OUTPUT, fileOut.getAbsolutePath()));
-
-                //if (isRequest)
-                //    getActivity().finish();
-
             } catch (Exception e) {
                 Log.e(TAG, "IO", e);
             }
@@ -614,6 +617,29 @@ public class CameraFragment extends Fragment {
                 }
             }
         );
+    }
+
+    public class benchmark implements Runnable {
+        @Override
+        public void run(){
+            if (benchmarkFPS == -1) {
+                benchmarking = true;
+                try {
+                    Thread.sleep(1000);
+                } catch (Exception e) {
+                    Log.d("Benchmark", "Trouble sleeping. Try Ativan?");
+                }
+                hookCallback();
+                try {
+                    Thread.sleep(2500);
+                } catch (Exception e) {
+                    Log.d("Benchmark", "Trouble sleeping. Try Ativan?");
+                }
+                if (mCamera != null)
+                    mCamera.setPreviewCallback(null);
+                benchmarking = false;
+            }
+        }
     }
 
     private void setUpGalleryButton(final View view) {
