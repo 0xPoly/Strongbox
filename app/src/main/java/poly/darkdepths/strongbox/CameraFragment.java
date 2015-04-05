@@ -1,7 +1,8 @@
 package poly.darkdepths.strongbox;
 
 /**
- * Created by poly on 3/30/15.
+ * Created by poly, with significant contributions from Nathan of the Guardian project
+ *
  */
 
 import android.app.Activity;

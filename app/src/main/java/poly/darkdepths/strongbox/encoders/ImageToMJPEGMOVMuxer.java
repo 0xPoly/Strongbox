@@ -1,9 +1,5 @@
 package poly.darkdepths.strongbox.encoders;
 
-/**
- * Created by poly on 3/28/15.
- */
-
 import org.jcodec.common.AudioFormat;
 import org.jcodec.common.NIOUtils;
 import org.jcodec.common.SeekableByteChannel;
@@ -18,6 +14,12 @@ import org.jcodec.containers.mp4.muxer.PCMMP4MuxerTrack;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
+
+/**
+ * This class is largely based on the IOCipher example (https://github.com/n8fr8/IOCipherCameraExample).
+ * @author Nathan of the Guardian Project
+ */
+
 /**
  * This class is part of JCodec ( www.jcodec.org ) This software is distributed
  * under FreeBSD License
