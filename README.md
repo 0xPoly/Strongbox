@@ -22,6 +22,7 @@ For a detailed explanation of what Strongbox can and cannot do, see [threat mode
 
 - [0xPoly](https://twitter.com/0xPoly)
 - [Nathan of Guardian](https://twitter.com/n8fr8)
+
 Significant parts of Strongbox are based of [Ciphercam](https://twitter.com/n8fr8). Without Ciphercam, Strongbox would not have been possible.
 
 Special thanks to:
