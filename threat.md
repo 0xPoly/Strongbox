@@ -37,7 +37,7 @@ Implementation
 We use IOCipher library, employing AES-256, to provide a virtual encrypted file system in which all data and configuration files are stored. This also provides integrity due to the GCM mode of operation the cipher is operated in. Additionally, we use 5000 rounds of PBKDF2 with a securely generated 256-bit salt to derive key material.
 
 ### Plaintext Disk Avoidance
-We avoid writing plaintext to using an implementation of a video recorder that writes a Motion JPEG file to the IOCipher VFS. With this implementation, no plaintext video data is written to disk. A custom implementation was required as Android's built in MediaRecorder requires access to a plaintext file.
+We avoid writing plaintext to using an implementation of a video recorder by Nathan of the Guardian project (https://github.com/n8fr8/IOCipherCameraExample) that writes a Motion JPEG file to the IOCipher VFS. With this implementation, no plaintext video data is written to disk. This alternative implementation was required as Android's built in MediaRecorder requires access to a plaintext file.
 
 ### Key Material Handling
 Passwords and derived key material are never written to disk. They are always stored in memory and cleared after a certain timeout (5 minutes of idle time). Additionally, the keys may be manually cleared from memory by pressing the lock buton always present in the interface.
