@@ -21,6 +21,8 @@ For a detailed explanation of what Strongbox can and cannot do, see [threat mode
 ## Contributors and License ##
 
 - [0xPoly](https://twitter.com/0xPoly)
+- [Nathan of Guardian](https://twitter.com/n8fr8)
+Significant parts of Strongbox are based of [Ciphercam](https://twitter.com/n8fr8). Without Ciphercam, Strongbox would not have been possible.
 
 Special thanks to:
 * Guardian Project for [IOCipher](https://guardianproject.info/code/iocipher/)
